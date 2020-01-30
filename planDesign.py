@@ -30,6 +30,14 @@ def printNodes(node):
     print("Title: " + node.title)
     print("Author: " + node.author)
     print("Rating: " + str(node.rating))
+    
+def traverse():
+    return None
+    
+def add():
+    return None
+    
+
 
 test1=linkedList()
 test1.headval=HeadNode("learn python","Kieran Devany")
