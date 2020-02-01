@@ -6,9 +6,8 @@ import sqlite3
 
 # configuration
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "rajsiosorqwnejrq39834tergm4"
-app.config['DATABASE'] = 'flaskr.db'
-app.config['DEBUG'] = True
+app.config.from_pyfile('config.py')
+print(app.config['DATABASE'])
 
 # connect to database
 def connect_db():
@@ -18,6 +17,7 @@ def connect_db():
 
 # create the database
 def init_db():
+    app.config.from_pyfile('config.py')
     with app.app_context():
         db = get_db()
         with app.open_resource('schema.sql', mode='r') as f:
