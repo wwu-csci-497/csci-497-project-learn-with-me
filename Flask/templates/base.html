@@ -17,4 +17,9 @@
     {% block header %}{% endblock %}
   </header>
   {% block content %}{% endblock %}
+{% for message in get_flashed_messages() %}
+    <div class="container alert alert-danger">
+      <span>Error: {{ message }}</span>
+    </div>
+{% endfor %}
 </section>
