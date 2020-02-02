@@ -6,10 +6,10 @@
 <nav>
   <h1>Learn With Me</h1>
   <ul>
-    <li><a href="{{ url_for('home') }}">Home</a></li>
-    <li><a href="{{ url_for('about') }}">About</a></li>
-    <li><a href="{{ url_for('register') }}">Register</a></li>
-    <li><a href="{{ url_for('login') }}">Login</a></li>
+    <li><a href="{{ url_for('review.home') }}">Home</a></li>
+    <li><a href="{{ url_for('review.about') }}">About</a></li>
+    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
   </ul>
 </nav>
 <section class="content">
@@ -17,4 +17,9 @@
     {% block header %}{% endblock %}
   </header>
   {% block content %}{% endblock %}
+{% for message in get_flashed_messages() %}
+    <div class="container alert alert-danger">
+      <span>Error: {{ message }}</span>
+    </div>
+{% endfor %}
 </section>

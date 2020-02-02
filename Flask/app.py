@@ -6,9 +6,7 @@ import sqlite3
 
 # configuration
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "rajsiosorqwnejrq39834tergm4"
-app.config['DATABASE'] = 'flaskr.db'
-app.config['DEBUG'] = True
+app.config.from_pyfile('config.py')
 
 # connect to database
 def connect_db():
@@ -18,6 +16,7 @@ def connect_db():
 
 # create the database
 def init_db():
+    app.config.from_pyfile('config.py')
     with app.app_context():
         db = get_db()
         with app.open_resource('schema.sql', mode='r') as f:
@@ -36,24 +35,43 @@ def close_db(error):
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
 
-
-app = Flask(__name__)
-
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('review.home.html')
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('review.about.html')
 
-@app.route('/register')
+@app.route('/register', methods=('GET', 'POST'))
 def register():
-    return render_template('register.html')
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        db = get_db()
+        error = None        
+        if not username:
+            error = 'Username is required.'
+        elif not password:
+            error = 'Password is required.'
+        elif db.execute(
+            'SELECT id FROM user WHERE username = ?', (username,)
+        ).fetchone() is not None:
+            error = 'User {} is already \
+                   registered.'.format(username)        
+        if error is None:
+            db.execute(
+                'INSERT INTO user (username, password) VALUES \
+               (?, ?)', (username, generate_password_hash(password))
+            )
+            db.commit()
+            return redirect(url_for('login'))        
+        flash(error)   
+    return render_template('auth.register.html')
 
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    return render_template('auth.login.html')
 
 
 @app.route('/<page_name>')
