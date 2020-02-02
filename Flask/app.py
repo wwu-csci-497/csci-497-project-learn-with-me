@@ -37,11 +37,11 @@ def close_db(error):
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('review.home.html')
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('review.about.html')
 
 @app.route('/register', methods=('GET', 'POST'))
 def register():
@@ -67,11 +67,11 @@ def register():
             db.commit()
             return redirect(url_for('login'))        
         flash(error)   
-    return render_template('register.html')
+    return render_template('auth.register.html')
 
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    return render_template('auth.login.html')
 
 
 @app.route('/<page_name>')
