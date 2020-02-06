@@ -23,12 +23,17 @@ def create_app(test_config=None):
 		
 	#app blueprints
 	
+	from . import db # imports the db file from the current directory
+	db.init_app(app)
+
+	from . import auth #authentication for login and register
+	app.register_blueprint(auth.bp)
+	
+	#app views
 	@app.route('/hello')
 	def hello():
 		return 'Hello world'
 	
-	@app.route('/')
-	def home():
-		return 'Welcome to my website!'
+	
 		
 	return app
