@@ -28,12 +28,17 @@ def create_app(test_config=None):
 
 	from . import auth #authentication for login and register
 	app.register_blueprint(auth.bp)
+
+	from . import about #File that controls, the about section
+	app.register_blueprint(about.bp)
 	
 	#app views
 	@app.route('/hello')
 	def hello():
 		return 'Hello world'
 	
-	
+	@app.route('/')
+	def home():
+		return render_template('home.html')
 		
 	return app
