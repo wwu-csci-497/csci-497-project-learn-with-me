@@ -27,7 +27,7 @@ def create():
 	return render_template('plans/create.html')
 
 
-@bp.route('/edit', methods= 'GET', 'POST')) #method for creating the actual pages of the posts
+@bp.route('/edit', methods= 'GET', 'POST')) #method for creating the actual pages of the posts, passing arguments may need to be done by info in url, will test
 def page(Pos, ID):
 	#initialize variables
 	if id=None:
@@ -55,21 +55,23 @@ def page(Pos, ID):
 			error="The Plan Must have a title"
 		elif not body:
 			error="The Plan Must have a body"
-		if error is None and post is None:
-			db.execute(
-			'INSERT INTO pages(title, body, goal, author_id) VALUES (?,?,?)',
-			(title, body, goal))
-			db.commit()
-			return redirect(url_for('plans.page'))
+		if error is None:  #if the post already exists, and the user is editing then should update not create another entry
+			if post is None:
+				db.execute(
+				'INSERT INTO pages(title, body, goal, author_id) VALUES (?,?,?)',
+				(title, body, goal))
+				db.commit()
+				return redirect(url_for('plans.page'))
 			
-		else:
-			db.execute(
-				'UPDATE post' 
-				'SET title=?, body=?, goal=?',
-				(title, body, goal)
-			)
-			db.commit()
-			return redirect(url_for('plans.page'))
+			else:
+				db.execute(
+					'UPDATE post' 
+					'SET title=?, body=?, goal=?',
+					(title, body, goal)
+				)
+				db.commit()
+				return redirect(url_for('plans.page'))
+		
 		flash(error)
 	return render_template('plans/edit.html')
 
