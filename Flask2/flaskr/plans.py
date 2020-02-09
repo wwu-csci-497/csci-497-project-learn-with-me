@@ -20,7 +20,9 @@ def create():
 			'INSERT INTO plan(title, body, author_id) VALUES (?,?,?)',
 			(title, body, g.user['id']))
 			db.commit()
-			return redirect(url_for('plans.page'))
+			postID=getID(g.user['id'])
+			page(0,postID)
+			return redirect(url_for('plans.view'))
 		flash(error)
 	return render_template('plans/create.html')
 
@@ -28,7 +30,8 @@ def create():
 @bp.route('/edit', methods= 'GET', 'POST')) #method for creating the actual pages of the posts
 def page(Pos, ID):
 	#initialize variables
-		
+	if id=None:
+		return redirect(url_for('plans.create'))	
 	#check if there is a page that already exists, to incorporate an editor
 		#pre load as place holder?
 	post=get_db().execute(
@@ -82,6 +85,17 @@ def view():
 	).fetchall()
 	return render_template('plan/view.html')
 		
+
+def getID(author): # used to find the id of the post, which is then used as the identifier, the linker between the post head and the pages after it
+	db=get_db() 
+	#picks up most recent post by that author and returns the ID, should work
+	PostID=db.execute(
+		'SELECT id'
+		'FROM post'
+		'WHERE author_id=author'
+		'order by created desc'
+		).fetchone()
+	return postID['id']
 
 
 
