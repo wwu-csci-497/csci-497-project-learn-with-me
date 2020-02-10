@@ -29,18 +29,18 @@ def create():
 	return render_template('plans/create.html')
 
 #method for creating the actual pages of the posts, passing arguments may need to be done by info in url, will test
-@bp.route('/<int:id>/<int:Pos>/edit', methods=( 'GET', 'POST')) 
+@bp.route('/<int:ID>/<int:Pos>/edit', methods=( 'GET', 'POST')) 
 def page(ID,Pos):
 	#initialize variables
-	if id is None:
+	if ID is None:
 		return redirect(url_for('plans.create'))	
 	#check if there is a page that already exists, to incorporate an editor
 		#pre load as place holder?
 	post=get_db().execute(
 		'SELECT prog_id, position, title, body, goal'
 		'FROM pages'
-		'WHERE prog_id=? and position= ?',
-		(Pos, ID)).fetchone()
+		'WHERE prog_id = ? AND position = ? ',
+		(ID, Pos)).fetchone()
 		
 	if post is not None:
 		request.form['title']=post['title']
