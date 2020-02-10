@@ -5,7 +5,8 @@ from flaskr.db import get_db
 
 bp=Blueprint('plans', __name__, url_prefix='/plans')
 
-@bp.route('/create', methods=('GET', 'POST')) #creates an entry in the post table, needs to lead into creating pages of the post
+#creates an entry in the post table, needs to lead into creating pages of the post
+@bp.route('/create', methods=('GET', 'POST')) 
 def create():
 	if request.method=='POST':
 		title=request.form['title']
@@ -16,21 +17,22 @@ def create():
 		elif not body:
 			error="The Plan Must have a body"
 		if error is None:
+			db=get_db()			
 			db.execute(
-			'INSERT INTO plan(title, body, author_id) VALUES (?,?,?)',
+			'INSERT INTO post(title, body, author_id) VALUES (?,?,?)',
 			(title, body, g.user['id']))
 			db.commit()
 			postID=getID(g.user['id'])
 			page(0,postID)
-			return redirect(url_for('plans.view'))
+			return redirect(url_for('plans.page'))
 		flash(error)
 	return render_template('plans/create.html')
 
-
-@bp.route('/edit', methods= 'GET', 'POST')) #method for creating the actual pages of the posts, passing arguments may need to be done by info in url, will test
-def page(Pos, ID):
+#method for creating the actual pages of the posts, passing arguments may need to be done by info in url, will test
+@bp.route('/<int:id>/<int:Pos>/edit', methods=( 'GET', 'POST')) 
+def page(ID,Pos):
 	#initialize variables
-	if id=None:
+	if id is None:
 		return redirect(url_for('plans.create'))	
 	#check if there is a page that already exists, to incorporate an editor
 		#pre load as place holder?
@@ -73,31 +75,29 @@ def page(Pos, ID):
 				return redirect(url_for('plans.page'))
 		
 		flash(error)
-	return render_template('plans/edit.html')
+	return render_template('plans/page.html')
 
 		 
 
 @bp.route('/view') #used to allow users to see all of their posts, and can make an override that will share all sharable posts
 def view():
-	db=get_db()
-	posts=db.execute(
-		'SELECT title, body, created, author_id, username'
-		'FROM post JOIN user on post.author_id = user.id'
+	
+	posts=get_db().execute(
+		'SELECT author_id, created, title, body '
+		'FROM post '	
 		'ORDER BY created DESC'
 	).fetchall()
-	return render_template('plan/view.html')
+	return render_template('plans/view.html', posts=posts)
 		
 
 def getID(author): # used to find the id of the post, which is then used as the identifier, the linker between the post head and the pages after it
-	db=get_db() 
 	#picks up most recent post by that author and returns the ID, should work
-	PostID=db.execute(
+	PostID=get_db().execute(
 		'SELECT id'
 		'FROM post'
-		'WHERE author_id=author'
-		'order by created desc'
-		).fetchone()
-	return postID['id']
+		'WHERE author_id = (?)',
+		(author,)).fetchone()
+	return PostID['id']
 
 
 
