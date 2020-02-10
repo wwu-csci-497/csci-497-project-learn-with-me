@@ -22,8 +22,8 @@ def create():
 			'INSERT INTO post(title, body, author_id) VALUES (?,?,?)',
 			(title, body, g.user['id']))
 			db.commit()
-			postID=getID(g.user['id'])
-			page(0,postID)
+			#postID=getID(g.user['id'])
+			page(0,10)
 			return redirect(url_for('plans.page'))
 		flash(error)
 	return render_template('plans/create.html')

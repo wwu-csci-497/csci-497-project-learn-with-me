@@ -1,0 +1,21 @@
+General overlay of the design of our sqlTables
+
+#users
+id-autoincrements
+username-text
+password-hashed
+
+#post
+id autoincrement
+author_id-> users.id
+created->time
+title
+body
+
+#pages
+id
+prog_id-> post.id
+position
+title
+body 
+goal

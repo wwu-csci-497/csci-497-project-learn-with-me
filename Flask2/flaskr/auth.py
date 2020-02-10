@@ -76,7 +76,7 @@ def load_logged_in_user():
 @bp.route('/logout') #self explanatory
 def logout():
 	session.clear()
-	return redirect(url_for('index'))
+	return redirect(url_for('auth.login'))
 
 def login_required(view): # if user is not logged in it will redirect
 	@functools.wraps(view)
