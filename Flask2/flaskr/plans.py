@@ -22,9 +22,7 @@ def create():
 			'INSERT INTO post(title, body, author_id) VALUES (?,?,?)',
 			(title, body, g.user['id']))
 			db.commit()
-			#postID=getID(g.user['id'])
-			page(0,10)
-			return redirect(url_for('plans.page'))
+			return redirect(url_for('plans.page', ID=24, Pos=0))
 		flash(error)
 	return render_template('plans/create.html')
 
@@ -33,37 +31,41 @@ def create():
 def page(ID,Pos):
 	#initialize variables
 	if ID is None:
-		return redirect(url_for('plans.create'))	
+		return redirect(url_for('plans.create'))
+	post=None	
+	db=get_db()
 	#check if there is a page that already exists, to incorporate an editor
 		#pre load as place holder?
-	post=get_db().execute(
-		'SELECT prog_id, position, title, body, goal'
-		'FROM pages'
-		'WHERE prog_id = ? AND position = ? ',
-		(ID, Pos)).fetchone()
+	#post=get_db().execute(
+	#	'SELECT prog_id, position, title, body, goal'
+	#	'FROM pages'
+	#	'WHERE prog_id = (?) AND position = (?) ',
+	#	(ID, Pos)
+	#).fetchone()
 		
-	if post is not None:
-		request.form['title']=post['title']
-		request.form['body']=post['body']  
-		request.form['goal']=post['goal']
+	#if post is not None:
+	#	request.form['title']=post['title']
+	#	request.form['body']=post['body']  
+	#	request.form['goal']=post['goal']
 	#allow user to edit, and then commit the changes to the database (SQL part)
-		
 	if request.method=='POST': 
 		title=request.form['title']
 		body=request.form['body']
-		goal=request.form['goal']		
+		goal=request.form['Goals']		
 		error=None
 		if not title:
 			error="The Plan Must have a title"
 		elif not body:
 			error="The Plan Must have a body"
+		elif not goal:
+			error="The Plan Must have a goal"
 		if error is None:  #if the post already exists, and the user is editing then should update not create another entry
 			if post is None:
 				db.execute(
-				'INSERT INTO pages(title, body, goal, author_id) VALUES (?,?,?)',
-				(title, body, goal))
+				'INSERT INTO pages(prog_id, position, title, body, goal) VALUES (?,?,?,?,?)',
+				(ID,Pos,title, body, goal))
 				db.commit()
-				return redirect(url_for('plans.page'))
+				return redirect(url_for('home.home'))
 			
 			else:
 				db.execute(
@@ -72,7 +74,7 @@ def page(ID,Pos):
 					(title, body, goal)
 				)
 				db.commit()
-				return redirect(url_for('plans.page'))
+				return redirect(url_for('home.home'))
 		
 		flash(error)
 	return render_template('plans/page.html')
