@@ -8,21 +8,23 @@
 {% endblock %}
 
 {% block content %}
-  {% for post in posts %}
+  
     <article class="post">
       <header>
         <div>
           <h1>{{ post['title'] }}</h1>
+	  <hr>
           <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
-        </div>
+        	</div>
         {% if g.user['id'] == post['author_id'] %}
-                <a class="action" href="{{ url_for('plans.page', id=post['id'], Pos=0) }}">Edit</a>
+                <a class="action" href="{{ url_for('plans.page', ID=post['prog_id'], Pos=post['position']) }}">Edit</a>
         {% endif %}
       </header>
-      <p class="body">{{ post['body'] }}</p>
+      <p post['body']</p>{{ post['body'] }}
+      <div>
+      <p post['goals'] </p>{{ post['goal'] }}
     </article>
-    {% if not loop.last %}
       <hr>
-    {% endif %}
-  {% endfor %}
+
+  
 {% endblock %}

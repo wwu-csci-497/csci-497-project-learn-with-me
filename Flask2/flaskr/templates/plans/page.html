@@ -5,6 +5,15 @@
 
 {% block content %}
   <form method="post">
+    {% if post != "None"  %}
+    <label for="title">Title</label>
+    <textarea name="title" id="title" value = "post['title']">{{ request.form['title'] }}</textarea>
+    <label for="body">Body</label>
+    <textarea name="body" id="body" value = "post['body']">{{ request.form['body'] }}</textarea>
+    <label for="Goals">Goals</label>
+    <textarea name="Goals" id="Goals" value = "post['goal']">{{ request.form['Goals'] }}</textarea>
+    <input type="submit" value="Save">
+    {% else %}
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="body">Body</label>
@@ -12,6 +21,7 @@
     <label for="Goals">Goals</label>
     <textarea name="Goals" id="Goals">{{ request.form['Goals'] }}</textarea>
     <input type="submit" value="Save">
+    {% endif %}
   </form>
 {% endblock %}
 

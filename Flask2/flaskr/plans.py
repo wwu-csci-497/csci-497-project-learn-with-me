@@ -22,7 +22,8 @@ def create():
 			'INSERT INTO post(title, body, author_id) VALUES (?,?,?)',
 			(title, body, g.user['id']))
 			db.commit()
-			return redirect(url_for('plans.page', ID=24, Pos=0))
+			postID=getID(g.user['id'])
+			return redirect(url_for('plans.page', ID=postID, Pos=0))
 		flash(error)
 	return render_template('plans/create.html')
 
@@ -36,17 +37,15 @@ def page(ID,Pos):
 	db=get_db()
 	#check if there is a page that already exists, to incorporate an editor
 		#pre load as place holder?
-	#post=get_db().execute(
-	#	'SELECT prog_id, position, title, body, goal'
-	#	'FROM pages'
-	#	'WHERE prog_id = (?) AND position = (?) ',
-	#	(ID, Pos)
-	#).fetchone()
+	post=get_db().execute(
+		'SELECT prog_id, position, title, body, goal FROM pages WHERE prog_id = ? AND position = ?', (ID, Pos,)
+	).fetchone()
+	#print(post['title'], post['body'],post['goal']) 
 		
 	#if post is not None:
-	#	request.form['title']=post['title']
-	#	request.form['body']=post['body']  
-	#	request.form['goal']=post['goal']
+		#request.form['title']=post['title']
+		#request.form['body']=post['body']  
+		#request.form['goal']=post['goal']
 	#allow user to edit, and then commit the changes to the database (SQL part)
 	if request.method=='POST': 
 		title=request.form['title']
@@ -69,9 +68,7 @@ def page(ID,Pos):
 			
 			else:
 				db.execute(
-					'UPDATE post' 
-					'SET title=?, body=?, goal=?',
-					(title, body, goal)
+					'UPDATE pages SET title=?, body=?, goal=? WHERE prog_id= ? AND position=?', (title, body, goal, ID, Pos,)
 				)
 				db.commit()
 				return redirect(url_for('home.home'))
@@ -81,24 +78,19 @@ def page(ID,Pos):
 
 		 
 
-@bp.route('/view') #used to allow users to see all of their posts, and can make an override that will share all sharable posts
-def view():
+@bp.route('/<int:ID>/<int:Pos>/view', methods=( 'GET', 'POST'))  #used to allow users to see all of their posts, and can make an override that will share all sharable posts
+def view(ID, Pos):
 	
 	posts=get_db().execute(
-		'SELECT author_id, created, title, body '
-		'FROM post '	
-		'ORDER BY created DESC'
-	).fetchall()
-	return render_template('plans/view.html', posts=posts)
+		'SELECT * FROM pages JOIN post ON pages.prog_id=post.id JOIN user ON user.id=post.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
+	).fetchone()
+	return render_template('plans/view.html', post=posts)
 		
 
 def getID(author): # used to find the id of the post, which is then used as the identifier, the linker between the post head and the pages after it
 	#picks up most recent post by that author and returns the ID, should work
 	PostID=get_db().execute(
-		'SELECT id'
-		'FROM post'
-		'WHERE author_id = (?)',
-		(author,)).fetchone()
+		'SELECT * FROM post WHERE author_id = ? ORDER BY created DESC' , (author,) ).fetchone()
 	return PostID['id']
 
 
