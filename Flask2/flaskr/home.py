@@ -4,6 +4,11 @@ from flask import (
 from flaskr.db import get_db
 bp=Blueprint('home', __name__, url_prefix='')
 
+########home.home
+##Design: Title page, code just populates front end with items from back end
+##Input: None
+##Outputs: Most recent posts, will eventually have different categories for highest rated, most popular things like that.
+########
 @bp.route('/')
 def home():
     db = get_db()

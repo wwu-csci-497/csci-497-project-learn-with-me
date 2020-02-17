@@ -1,28 +1,49 @@
-DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS pages;
+DROP TABLE IF EXISTS rates;
+DROP TABLE IF EXISTS comments;
 
-CREATE TABLE user (
+CREATE TABLE users(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL
 );
 
-CREATE TABLE post(
+CREATE TABLE posts(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   title TEXT NOT NULL,
   body TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+  FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
 CREATE TABLE pages(
   pid INTEGER PRIMARY KEY AUTOINCREMENT,
   prog_id INTEGER NOT NULL,
   position INTEGER NOT NULL,
-  title TEXT NOT NULL,
-  body TEXT NOT NULL,
+  ptitle TEXT NOT NULL,
+  pbody TEXT NOT NULL,
   goal TEXT NOT NULL,
-  FOREIGN KEY (prog_id) REFERENCES post (id)
+  FOREIGN KEY (prog_id) REFERENCES posts (id)
+);
+
+CREATE TABLE rates(
+rid INTEGER PRIMARY KEY AUTOINCREMENT,
+prog_id INTEGER NOT NULL,
+author_id INTEGER NOT NULL,
+val INTEGER,
+FOREIGN KEY (prog_id) REFERENCES posts (id)
+FOREIGN KEY (author_id) REFERENCES pages (author_id)
+);
+
+CREATE TABLE comments(
+prog_id INTEGER NOT NULL,
+author_id INTEGER NOT NULL,
+position INTEGER NOT NULL,
+comments TEXT,
+FOREIGN KEY (prog_id) REFERENCES posts (id)
+FOREIGN KEY (author_id) REFERENCES pages (author_id)
+FOREIGN KEY (position) REFERENCES pages (position)
 );
