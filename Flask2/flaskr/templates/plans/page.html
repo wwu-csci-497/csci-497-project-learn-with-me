@@ -5,13 +5,13 @@
 
 {% block content %}
   <form method="post">
-    {% if post != "None"  %}
+    {% if post != None %}
     <label for="title">Title</label>
-    <textarea name="title" id="title" value = "post['title']">{{ request.form['title'] }}</textarea>
+    <textarea name="title" id="title" >{{ post['title'] }}</textarea>
     <label for="body">Body</label>
-    <textarea name="body" id="body" value = "post['body']">{{ request.form['body'] }}</textarea>
+    <textarea name="body" id="body" >{{ post['body'] }}</textarea>
     <label for="Goals">Goals</label>
-    <textarea name="Goals" id="Goals" value = "post['goal']">{{ request.form['Goals'] }}</textarea>
+    <textarea name="Goals" id="Goals">{{ post['goal'] }}</textarea>
     <input type="submit" value="Save">
     {% else %}
     <label for="title">Title</label>

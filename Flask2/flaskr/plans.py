@@ -40,12 +40,7 @@ def page(ID,Pos):
 	post=get_db().execute(
 		'SELECT prog_id, position, title, body, goal FROM pages WHERE prog_id = ? AND position = ?', (ID, Pos,)
 	).fetchone()
-	#print(post['title'], post['body'],post['goal']) 
 		
-	#if post is not None:
-		#request.form['title']=post['title']
-		#request.form['body']=post['body']  
-		#request.form['goal']=post['goal']
 	#allow user to edit, and then commit the changes to the database (SQL part)
 	if request.method=='POST': 
 		title=request.form['title']
@@ -64,17 +59,17 @@ def page(ID,Pos):
 				'INSERT INTO pages(prog_id, position, title, body, goal) VALUES (?,?,?,?,?)',
 				(ID,Pos,title, body, goal))
 				db.commit()
-				return redirect(url_for('home.home'))
+				return redirect(url_for('plans.page', ID=ID, Pos=Pos))
 			
 			else:
 				db.execute(
 					'UPDATE pages SET title=?, body=?, goal=? WHERE prog_id= ? AND position=?', (title, body, goal, ID, Pos,)
 				)
 				db.commit()
-				return redirect(url_for('home.home'))
+				return redirect(url_for('plans.page', ID=ID, Pos=Pos))
 		
 		flash(error)
-	return render_template('plans/page.html')
+	return render_template('plans/page.html', post=post)
 
 		 
 
