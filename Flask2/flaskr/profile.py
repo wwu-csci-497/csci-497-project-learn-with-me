@@ -5,6 +5,11 @@ from flaskr.db import get_db
 
 bp=Blueprint('profile', __name__, url_prefix='/profile')
 
+########profile.account
+##Design: displays the users account, 
+##Input: currently logged in users name
+##Outputs: displays all posts created by said user, will eventually have small bio a picture and recent ratings
+########
 @bp.route('/<string:ID>/')
 def account(ID):
 	accountPosts=get_db().execute(
