@@ -21,11 +21,24 @@ nav ul li {
 }
 body {
   margin: 0 auto;
-  background-color: white;
+  background-color: #E8EEF1;
+}
+a:link {
+  text-decoration: none;
+}
+a:visited {
+  color:#2D5280;
+  text-decoration: none;
+}
+a:hover {
+  color:
+}
+a:active {
+  color: white;
 }
 
 #top {
-  display: block;
+  display: flex;
   background-color: #cccccc;
 }
 
