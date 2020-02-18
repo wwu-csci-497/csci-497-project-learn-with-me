@@ -1,21 +1,22 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} -Learn With Me</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<nav>
-  <h1>Learn With Me</h1>
-  <ul>
-    {% if g.user %}
-      <li><a href="{{ url_for('home.home') }}">Home</a>
-      <li><a href="{{ url_for('profile.account', ID=g.user['username'])}}">{{ g.user['username'] }}</a>
-
-      <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
-    {% else %}
-      <li><a href="{{ url_for('home.home') }}">Home</a>
-      <li><a href="{{ url_for('auth.register') }}">Register</a>
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
-    {% endif %}
-  </ul>
-</nav>
+<link rel="stylesheet" href="{{ url_for('static', filename='project.css') }}">
+<div id="top">
+    <a href="{{ url_for('home.home') }}"><h1>Learn With Me</h1></a>
+    <nav>
+      <ul>
+        {% if g.user %}
+        <li><a href="{{ url_for('home.home') }}">Home</a></li>
+        <li><a href="{{ url_for('profile.account', ID=g.user['username'])}}">{{ g.user['username'] }}</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+        {% else %}
+        <li><a href="{{ url_for('home.home') }}">Home</a></li>
+        <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+</div>
 <section class="content">
   <header>
     {% block header %}{% endblock %}
@@ -25,3 +26,12 @@
   {% endfor %}
   {% block content %}{% endblock %}
 </section>
+
+<footer>
+  <h5>
+    Kieran Devany, Connor Matsudaira <br>
+    CSCI 497
+  </h5>
+</footer>
+
+</html>

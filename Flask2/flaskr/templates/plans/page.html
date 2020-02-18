@@ -12,8 +12,13 @@
     <textarea name="body" id="body" >{{ post['pbody'] }}</textarea>
     <label for="Goals">Goals</label>
     <textarea name="Goals" id="Goals">{{ post['goal'] }}</textarea>
+
+    {% if position != 0 %}
+    <input type="button" onclick="window.location.href='{{ url_for('plans.page', ID=postID, Pos=(position-1)) }}';" value="Previous"/>
+    {% endif %}
+
+    <input type="button" onclick="window.location.href='{{ url_for('plans.page', ID=postID, Pos=(position+1)) }}';" value="Next"/>
     <input type="submit" value="Save">
-    <input type="button" onclick="" value="Next">
     {% else %}
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
@@ -21,9 +26,12 @@
     <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
     <label for="Goals">Goals</label>
     <textarea name="Goals" id="Goals">{{ request.form['Goals'] }}</textarea>
+    {% if position != 0 %}
+    <input type="button" onclick="window.location.href='{{ url_for('plans.page', ID=postID, Pos=(position-1)) }}';" value="Previous"/>
+    {% endif %}
+
+    <input type="button" onclick="window.location.href='{{ url_for('plans.page', ID=postID, Pos=(position+1)) }}';" value="Next"/>
     <input type="submit" value="Save">
-    <input type="button" onclick="need value here to save and advance to next page" value="Next">
     {% endif %}
   </form>
 {% endblock %}
-
