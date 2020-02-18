@@ -1,55 +1,20 @@
-html {
-	font-family: sans-serif;
+html{
+  font-family: sans-serif;
 	background: #97BCE8;
-	padding: 1rem;
 }
-body {
-	margin: 0 auto;
-	background: white;
+footer {
+  text-align: justify;
 }
-h1 {
-	font-family: serif;
-	color: #377ba8;
-	margin: 1rem 0;
-	font-size: xx-large;
+
+#top {
+  display: block;
+  background-color: #c2c2d6;
 }
-a {
-	color: #377ba8;
-}
-hr {
-	border: none ;
-	border-top: 1px solid lightgray;
-}
-nav {
-	background: lightgray;
-	display: flex;
-	align-items: center;
-	padding: 1rem 0.5rem;
-}
-nav h1 {
-	flex: auto;
-	margin: 0;
-}
-nav h1 a {
-	text-decoration: none;
-	padding: 0.25rem 0.5rem;
-}
-nav ul {
-	display: flex;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-nav ul li a, nav ul li span, header .action {
-	display: block;
-	padding: 0.5rem 1rem;
-}
+
 .content {
 	grid-template-columns: 100px auto 100px;
-	grid-template-rows:15% 200px auto;	
+	grid-template-rows:15% 200px auto;
 	padding: 0 1rem 1rem;
-	
-	
 }
 .content > header {
 	border-top: 1px solid lightgray
@@ -105,21 +70,10 @@ nav ul li a, nav ul li span, header .action {
 	min-height: 12em;
 	resize: vertical;
 }
-
 .contentBox{
 display: block;
 }
-
 .content_header{
 display: grid;
-fontcolor: 
+fontcolor:
 }
-
-input.danger {
-	color: #cc2f2e;
-}
-input[type=submit] {
-	align-self: start;
-	min-width: 10em;
-}
-
