@@ -4,6 +4,9 @@ DROP TABLE IF EXISTS pages;
 DROP TABLE IF EXISTS rates;
 DROP TABLE IF EXISTS comments;
 
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS post;
+
 CREATE TABLE users(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
@@ -29,21 +32,15 @@ CREATE TABLE pages(
   FOREIGN KEY (prog_id) REFERENCES posts (id)
 );
 
-CREATE TABLE rates(
-rid INTEGER PRIMARY KEY AUTOINCREMENT,
-prog_id INTEGER NOT NULL,
-author_id INTEGER NOT NULL,
-val INTEGER,
-FOREIGN KEY (prog_id) REFERENCES posts (id)
-FOREIGN KEY (author_id) REFERENCES pages (author_id)
-);
 
 CREATE TABLE comments(
-prog_id INTEGER NOT NULL,
-author_id INTEGER NOT NULL,
-position INTEGER NOT NULL,
-comments TEXT,
-FOREIGN KEY (prog_id) REFERENCES posts (id)
-FOREIGN KEY (author_id) REFERENCES pages (author_id)
-FOREIGN KEY (position) REFERENCES pages (position)
+  comID INTEGER PRIMARY KEY AUTOINCREMENT,
+  prog_id INTEGER NOT NULL,
+  author_id INTEGER NOT NULL,
+  position INTEGER NOT NULL,
+  comments TEXT,
+  rate INTEGER,
+  FOREIGN KEY (prog_id) REFERENCES posts (id),
+  FOREIGN KEY (author_id) REFERENCES pages (author_id),
+  FOREIGN KEY (position) REFERENCES pages (position)
 );
