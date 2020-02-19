@@ -23,7 +23,7 @@ def create():
 		if error is None:
 			db=get_db()
 			db.execute(
-			'INSERT INTO post(title, body, author_id) VALUES (?,?,?)',
+			'INSERT INTO posts(title, body, author_id) VALUES (?,?,?)',
 			(title, body, g.user['id']))
 			db.commit()
 			postID=getID(g.user['id'])
@@ -77,7 +77,7 @@ def page(ID,Pos):
 				return redirect(url_for('plans.page', ID=ID, Pos=Pos))
 
 		flash(error)
-	return render_template('plans/page.html', post=post, postID=ID, position=Pos)
+	return render_template('plans/page.html', post=post, ID=ID, position=Pos)
 
 
 ########plans.view
@@ -89,9 +89,16 @@ def page(ID,Pos):
 def view(ID, Pos):
 
 	posts=get_db().execute(
-		'SELECT * FROM pages JOIN post ON pages.prog_id=post.id JOIN user ON user.id=post.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
+		'SELECT * FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchone()
-	return render_template('plans/view.html', post=posts)
+	next=True
+	nextPost=get_db().execute(
+		'SELECT ptitle FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, (Pos+1))
+	).fetchone()
+	if nextPost is None:
+		next=False
+	
+	return render_template('plans/view.html', post=posts,  postID=ID, position=Pos, next=next)
 
 ########plans.create
 ##Design: creates a post, which has mutable attributes title and body. Upon completion redirects to pages
@@ -101,5 +108,5 @@ def view(ID, Pos):
 def getID(author): # used to find the id of the post, which is then used as the identifier, the linker between the post head and the pages after it
 	#picks up most recent post by that author and returns the ID, should work
 	PostID=get_db().execute(
-		'SELECT * FROM post WHERE author_id = ? ORDER BY created DESC' , (author,) ).fetchone()
+		'SELECT * FROM posts WHERE author_id = ? ORDER BY created DESC' , (author,) ).fetchone()
 	return PostID['id']

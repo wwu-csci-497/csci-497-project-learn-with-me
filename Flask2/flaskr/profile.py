@@ -13,7 +13,7 @@ bp=Blueprint('profile', __name__, url_prefix='/profile')
 @bp.route('/<string:ID>/')
 def account(ID):
 	accountPosts=get_db().execute(
-		'SELECT * FROM pages JOIN post ON pages.prog_id=post.id JOIN user ON user.id=post.author_id WHERE author_id = ?', 	(g.user['id'],)
+		'SELECT * FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE author_id = ?', 	(g.user['id'],)
 	).fetchall()	
 	
 	return render_template('Profile/profile.html', posts=accountPosts)

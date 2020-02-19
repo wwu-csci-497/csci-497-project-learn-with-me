@@ -16,15 +16,27 @@
 	  <hr>
           <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
         	</div>
-        {% if g.user['id'] == post['author_id'] %}
+	{% if g.user %}
+	 	<a class="action" >Comment</a>
+	{% endif %}       
+	{% if g.user['id'] == post['author_id'] %}
                 <a class="action" href="{{ url_for('plans.page', ID=post['prog_id'], Pos=post['position']) }}">Edit</a>
         {% endif %}
       </header>
       <p post['body']</p>{{ post['body'] }}
       <div>
       <p post['goals'] </p>{{ post['goal'] }}
+	{% if position != 0 %}
+    	<input type="button" onclick="window.location.href='{{ url_for('plans.view', ID=postID, Pos=(position-1)) }}';" value="Previous"/>
+    	{% endif %}
+	{% if next == True %}
+   	 <input type="button" onclick="window.location.href='{{ url_for('plans.view', ID=postID, Pos=(position+1)) }}';" value="Next"/>
+	{% endif %}
     </article>
+	
       <hr>
+	{% if userwantstoComment %}
+	{% endif %}
 
   
 {% endblock %}
