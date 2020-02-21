@@ -98,7 +98,24 @@ def view(ID, Pos):
 	if nextPost is None:
 		next=False
 	
-	return render_template('plans/view.html', post=posts,  postID=ID, position=Pos, next=next)
+	comms=get_db().execute(
+		'SELECT * FROM comments WHERE prog_id = ? AND position = ?', (ID, Pos)
+	).fetchall()
+
+	if request.method=='POST':
+		body=request.form['body']
+		error=None
+		if not body:
+			error="Comments Must have a body"
+		if error is None:
+			db.execute(
+			'INSERT INTO comments(prog_id, author_id, position, comments, rate) VALUES(?,?,?,?,?)'
+			(ID, g.user['id'], Pos, body, 1))
+			db.commit()
+			return redirect(url_for('plans.view', ID=ID, Pos=Pos))
+		flash(error)
+	
+	return render_template('plans/view.html', post=posts,  postID=ID, position=Pos, next=next, comms =comms)
 
 ########plans.create
 ##Design: creates a post, which has mutable attributes title and body. Upon completion redirects to pages
