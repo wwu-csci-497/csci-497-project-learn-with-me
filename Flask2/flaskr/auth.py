@@ -15,13 +15,16 @@ def register():
 	if request.method =='POST':
 		username=request.form['username']
 		password=request.form['password']
+		confPassword=request.form['CheckPassword']
 		db=get_db()
 		error=None
 	
 		if not username:
-			error='username is required'
+			error='Username is required'
 		elif not password:
-			error='password is required'
+			error='Password is required'
+		elif password != confPassword:
+			error='Passwords must match'
 		elif db.execute(
 			'SELECT id FROM users WHERE username = ?', (username,)
 			).fetchone() is not None:

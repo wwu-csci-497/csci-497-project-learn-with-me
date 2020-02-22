@@ -81,7 +81,7 @@ def page(ID,Pos):
 
 
 ########plans.view
-##Design: views a post of choice without ability to edit
+##Design: views a post of choice without ability to edit, but gives users ability to comment and rate 
 ##Input: Program (ID), used to assign ownership of page to post and POSITION(POS), used to determine the position at which the post lies
 ##Outputs: returns a "post" that is displayed. Need to update names
 ########
@@ -92,7 +92,7 @@ def view(ID, Pos):
 		'SELECT * FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchone()
 	rating=db.execute(
-		'SELECT SUM(rate) as score FROM comments WHERE prog_id= ?', (ID,)
+		'SELECT SUM(rate) as score FROM (SELECT DISTINCT author_id, rate from comments WHERE prog_id= ?)', (ID,)
 	).fetchone()
 	next=True
 	nextPost=db.execute(
@@ -111,9 +111,9 @@ def view(ID, Pos):
 		error=None
 		if not comment:
 			error="Comments Must have a body"
-		if not rate:
+		elif not rate:
 			rate=0
-		if error is None:
+		elif error is None:
 			db.execute(
 			'INSERT INTO comments(prog_id, author_id, position, comments, rate) VALUES(?,?,?,?,?)',
 			(ID, g.user['id'], Pos, comment, rate ))
