@@ -34,30 +34,28 @@
    	 <input type="button" onclick="window.location.href='{{ url_for('plans.view', ID=postID, Pos=(position+1)) }}';" value="Next"/>
 	{% endif %}
 	<div>
-	{% if comment!=false %}
-	<label for="Comment">Comment</label>
-    	<textarea name="Comments" id="Comments">{{ request.form['body'] }}</textarea>
-   	<input type="submit" value="Save">
+	{% if comment!=True %}	
+	<form method="post">
+		<label for="body">Comment</label>
+    		<textarea name="body" id="body">{{ request.form['body'] }}</textarea>
+   		<input type="submit" value="Save">
+	</form>
 	{% endif %}
     </article>
 	
 
 
-{% for post in posts %}
+{% for comm in comms %}
     <article class="content">
       <header>
         <div>
-          <h1>{{ post['title'] }}</h1>
-          <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
-        </div>
-        {% if g.user['id'] == post['author_id'] %}
-          <a class="action" href="{{ url_for('plans.view', ID=post['id'], Pos=0) }}">View</a>
-	  <a class="action" href="{{ url_for('plans.page', ID=post['id'], Pos=0) }}">Edit</a>
-        {% endif %}
+          <div class="about">by {{ comm['author_id'] }}</div>
       </header>
-      <p class="body">{{ post['body'] }}</p>
+      <p class="body">{{ comm['comments'] }}</p>
     </article>
     {% if not loop.last %}
+ 	{% endif %}
+  {% endfor %}
 	
 
   

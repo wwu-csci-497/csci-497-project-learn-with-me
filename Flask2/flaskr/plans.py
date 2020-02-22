@@ -87,30 +87,31 @@ def page(ID,Pos):
 ########
 @bp.route('/<int:ID>/<int:Pos>/view', methods=( 'GET', 'POST'))  #used to allow users to see all of their posts, and can make an override that will share all sharable posts
 def view(ID, Pos):
-
-	posts=get_db().execute(
+	db=get_db()
+	posts=db.execute(
 		'SELECT * FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchone()
 	next=True
-	nextPost=get_db().execute(
+	nextPost=db.execute(
 		'SELECT ptitle FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, (Pos+1))
 	).fetchone()
 	if nextPost is None:
 		next=False
 	
-	comms=get_db().execute(
+	comms=db.execute(
 		'SELECT * FROM comments WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchall()
 
 	if request.method=='POST':
-		body=request.form['body']
+		comment=request.form['body']
+		rate=0
 		error=None
-		if not body:
+		if not comment:
 			error="Comments Must have a body"
 		if error is None:
 			db.execute(
-			'INSERT INTO comments(prog_id, author_id, position, comments, rate) VALUES(?,?,?,?,?)'
-			(ID, g.user['id'], Pos, body, 1))
+			'INSERT INTO comments(prog_id, author_id, position, comments, rate) VALUES(?,?,?,?,?)',
+			(ID, g.user['id'], Pos, comment, rate ))
 			db.commit()
 			return redirect(url_for('plans.view', ID=ID, Pos=Pos))
 		flash(error)
