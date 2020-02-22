@@ -91,6 +91,9 @@ def view(ID, Pos):
 	posts=db.execute(
 		'SELECT * FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchone()
+	rating=db.execute(
+		'SELECT SUM(rate) as score FROM comments WHERE prog_id= ?', (ID,)
+	).fetchone()
 	next=True
 	nextPost=db.execute(
 		'SELECT ptitle FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, (Pos+1))
@@ -104,10 +107,12 @@ def view(ID, Pos):
 
 	if request.method=='POST':
 		comment=request.form['body']
-		rate=0
+		rate=request.form['rating']
 		error=None
 		if not comment:
 			error="Comments Must have a body"
+		if not rate:
+			rate=0
 		if error is None:
 			db.execute(
 			'INSERT INTO comments(prog_id, author_id, position, comments, rate) VALUES(?,?,?,?,?)',
@@ -116,7 +121,7 @@ def view(ID, Pos):
 			return redirect(url_for('plans.view', ID=ID, Pos=Pos))
 		flash(error)
 	
-	return render_template('plans/view.html', post=posts,  postID=ID, position=Pos, next=next, comms =comms)
+	return render_template('plans/view.html', post=posts,  postID=ID, position=Pos, next=next, comms =comms,rating =rating)
 
 ########plans.create
 ##Design: creates a post, which has mutable attributes title and body. Upon completion redirects to pages
