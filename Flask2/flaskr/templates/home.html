@@ -39,6 +39,8 @@
         {% if g.user['id'] == post['author_id'] %}
           <a class="action" href="{{ url_for('plans.view', ID=post['id'], Pos=0) }}">View</a>
 	  <a class="action" href="{{ url_for('plans.page', ID=post['id'], Pos=0) }}">Edit</a>
+	{% else %}
+	  <a class="action" href="{{ url_for('plans.view', ID=post['id'], Pos=0) }}">View</a>
         {% endif %}
       </header>
       <p class="body">{{ post['body'] }}</p>

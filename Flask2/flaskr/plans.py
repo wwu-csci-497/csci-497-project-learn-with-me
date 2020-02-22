@@ -23,7 +23,7 @@ def create():
 		if error is None:
 			db=get_db()
 			db.execute(
-			'INSERT INTO post(title, body, author_id) VALUES (?,?,?)',
+			'INSERT INTO posts(title, body, author_id) VALUES (?,?,?)',
 			(title, body, g.user['id']))
 			db.commit()
 			postID=getID(g.user['id'])
@@ -77,21 +77,51 @@ def page(ID,Pos):
 				return redirect(url_for('plans.page', ID=ID, Pos=Pos))
 
 		flash(error)
-	return render_template('plans/page.html', post=post, postID=ID, position=Pos)
+	return render_template('plans/page.html', post=post, ID=ID, position=Pos)
 
 
 ########plans.view
-##Design: views a post of choice without ability to edit
+##Design: views a post of choice without ability to edit, but gives users ability to comment and rate 
 ##Input: Program (ID), used to assign ownership of page to post and POSITION(POS), used to determine the position at which the post lies
 ##Outputs: returns a "post" that is displayed. Need to update names
 ########
 @bp.route('/<int:ID>/<int:Pos>/view', methods=( 'GET', 'POST'))  #used to allow users to see all of their posts, and can make an override that will share all sharable posts
 def view(ID, Pos):
-
-	posts=get_db().execute(
-		'SELECT * FROM pages JOIN post ON pages.prog_id=post.id JOIN user ON user.id=post.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
+	db=get_db()
+	posts=db.execute(
+		'SELECT * FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchone()
-	return render_template('plans/view.html', post=posts)
+	rating=db.execute(
+		'SELECT SUM(rate) as score FROM (SELECT DISTINCT author_id, rate from comments WHERE prog_id= ?)', (ID,)
+	).fetchone()
+	next=True
+	nextPost=db.execute(
+		'SELECT ptitle FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, (Pos+1))
+	).fetchone()
+	if nextPost is None:
+		next=False
+	
+	comms=db.execute(
+		'SELECT * FROM comments WHERE prog_id = ? AND position = ?', (ID, Pos)
+	).fetchall()
+
+	if request.method=='POST':
+		comment=request.form['body']
+		rate=request.form['rating']
+		error=None
+		if not comment:
+			error="Comments Must have a body"
+		elif not rate:
+			rate=0
+		elif error is None:
+			db.execute(
+			'INSERT INTO comments(prog_id, author_id, position, comments, rate) VALUES(?,?,?,?,?)',
+			(ID, g.user['id'], Pos, comment, rate ))
+			db.commit()
+			return redirect(url_for('plans.view', ID=ID, Pos=Pos))
+		flash(error)
+	
+	return render_template('plans/view.html', post=posts,  postID=ID, position=Pos, next=next, comms =comms,rating =rating)
 
 ########plans.create
 ##Design: creates a post, which has mutable attributes title and body. Upon completion redirects to pages
@@ -101,5 +131,5 @@ def view(ID, Pos):
 def getID(author): # used to find the id of the post, which is then used as the identifier, the linker between the post head and the pages after it
 	#picks up most recent post by that author and returns the ID, should work
 	PostID=get_db().execute(
-		'SELECT * FROM post WHERE author_id = ? ORDER BY created DESC' , (author,) ).fetchone()
+		'SELECT * FROM posts WHERE author_id = ? ORDER BY created DESC' , (author,) ).fetchone()
 	return PostID['id']
