@@ -40,6 +40,9 @@ def create_app(test_config=None):
 	
 	from . import profile
 	app.register_blueprint(profile.bp)
+
+	from . import groups
+	app.register_blueprint(groups.bp)
 	
 	#app views
 	@app.route('/hello')

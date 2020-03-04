@@ -3,14 +3,15 @@ DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS pages;
 DROP TABLE IF EXISTS rates;
 DROP TABLE IF EXISTS comments;
-
-DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS groups;
+DROP TABLE IF EXISTS memberLink;
+DROP TABLE IF EXISTS members;
 
 CREATE TABLE users(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
+  password TEXT NOT NULL,
+  membership INTEGER
 );
 
 CREATE TABLE posts(
@@ -44,3 +45,27 @@ CREATE TABLE comments(
   FOREIGN KEY (author_id) REFERENCES pages (author_id),
   FOREIGN KEY (position) REFERENCES pages (position)
 );
+
+CREATE TABLE groups(
+ groupID INTEGER PRIMARY KEY AUTOINCREMENT,
+ owner INTEGER NOT NULL,
+ name TEXT NOT NULL, 
+ FOREIGN KEY (owner) REFERENCES users(id)
+);
+
+CREATE TABLE memberLink(
+ memID INTEGER NOT NULL,
+ userID INTEGER NOT NULL,
+ FOREIGN KEY (memID) REFERENCES members (memID),
+ FOREIGN KEY (userID) REFERENCES users (id)
+);
+
+CREATE table members(
+ memID INTEGER PRIMARY KEY AUTOINCREMENT,
+ groupID INTEGER NOT NULL,
+ permissions INTEGER not null,
+ FOREIGN KEY (groupID) REFERENCES groups(groupID)
+);
+
+ 
+ 
