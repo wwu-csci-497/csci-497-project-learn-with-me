@@ -4,16 +4,20 @@ html{
   padding: 1rem;
 }
 footer {
-  align: center;
+  text-align: center;
 }
 div h1 {
   align: left;
+  padding-right: 30rem;
+  padding-left: 1rem;
 }
 nav ul {
   display: flex;
 	list-style: none;
 	margin: 0;
-	padding: 0;
+	padding-left: 25rem;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
 }
 nav ul li {
   text-align:right;
