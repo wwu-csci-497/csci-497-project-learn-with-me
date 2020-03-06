@@ -20,7 +20,9 @@
 	  <a class="action" href="{{ url_for('plans.page', ID=post['id'], Pos=0) }}">edit</a>
         {% endif %}
       </header>
+	{% autoescape off %}
       <p class="body">{{ post['body'] }}</p>
+	{% endautoescape %}
     </article>
     {% if not loop.last %}
       <hr>

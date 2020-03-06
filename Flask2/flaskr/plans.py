@@ -102,17 +102,18 @@ def view(ID, Pos):
 		next=False
 	
 	comms=db.execute(
-		'SELECT * FROM comments WHERE prog_id = ? AND position = ?', (ID, Pos)
+		'SELECT U.username, C.comments FROM comments C JOIN users U ON U.id=C.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchall()
 
 	if request.method=='POST':
 		comment=request.form['body']
-		rate=request.form['rating']
+		try:
+			rate=request.form['rate']
+		except: 
+			rate=0
 		error=None
 		if not comment:
 			error="Comments Must have a body"
-		elif not rate:
-			rate=0
 		elif error is None:
 			db.execute(
 			'INSERT INTO comments(prog_id, author_id, position, comments, rate) VALUES(?,?,?,?,?)',

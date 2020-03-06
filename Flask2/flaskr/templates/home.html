@@ -43,7 +43,9 @@
 	  <a class="action" href="{{ url_for('plans.view', ID=post['id'], Pos=0) }}">View</a>
         {% endif %}
       </header>
+	{% autoescape off %}
       <p class="body">{{ post['body'] }}</p>
+	{% endautoescape %}
     </article>
     {% if not loop.last %}
       <hr>

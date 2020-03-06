@@ -1,11 +1,5 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Posts{% endblock %}</h1>
-  {% if g.user %}
-    <a class="action" href="{{ url_for('plans.create') }}">New</a>
-  {% endif %}
-{% endblock %}
 
 {% block content %}
   
@@ -23,14 +17,17 @@
         </div>
 	{% if g.user %}
 	 	<a href="{{ url_for('plans.view', ID=postID, Pos= position, comment= True) }}">Comment</a>
-	{% endif %}       
-	{% if g.user['id'] == post['author_id'] %}
+		{% if g.user['id'] == post['author_id'] %}
                 <a class="action" href="{{ url_for('plans.page', ID=post['prog_id'], Pos=post['position']) }}">Edit</a>
-        {% endif %}
+        	{% endif %}
+	{% endif %} 
       </header>
-      <p post['body']</p>{{ post['body'] }}
+	{% autoescape off %}
+      {{ post['body'] }}
       <div>
-      <p post['goals'] </p>{{ post['goal'] }}
+      <h1> Objectives </h1>
+	{{ post['goal'] }}
+	{% endautoescape %}
 	<div>
 	{% if position != 0 %}
     	<input type="button" onclick="window.location.href='{{ url_for('plans.view', ID=postID, Pos=(position-1)) }}';" value="Previous"/>
@@ -41,9 +38,9 @@
 	<div>
 	{% if comment!=True %}	
 	<form method="post">
-		<input type="radio" id="up" name="rating" value="1">request.form['rating']
+		<input type="radio" id="up" name="rate" value="1">
 		<label for="up"> +1</label><br>
-		<input type="radio" id="down" name="rating" value="-1">request.form['rating']
+		<input type="radio" id="down" name="rate" value="-1">
 		<label for="down"> -1</label><br>
 		<label for="body">Comment</label>
     		<textarea name="body" id="body">{{ request.form['body'] }}</textarea>
@@ -58,9 +55,11 @@
     <article class="content">
       <header>
         <div>
-          <div class="about">by {{ comm['author_id'] }}</div>
+          <div class="about">by {{ comm['username'] }}</div>
       </header>
+	{% autoescape off %}
       <p class="body">{{ comm['comments'] }}</p>
+	{% endautoescape %}	
     </article>
     {% if not loop.last %}
  	{% endif %}
