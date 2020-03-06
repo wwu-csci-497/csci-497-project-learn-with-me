@@ -18,3 +18,7 @@ def home():
         ' ORDER BY created DESC'
     ).fetchall()
     return render_template('home.html', posts=posts)
+
+@bp.route('/quickstart/')
+def quickstart():
+	return render_template('quickstart.html')
