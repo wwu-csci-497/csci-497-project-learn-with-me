@@ -2,6 +2,7 @@ from flask import (
 	Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from flaskr.db import get_db
+import datetime
 
 bp=Blueprint('plans', __name__, url_prefix='/plans')
 
@@ -104,6 +105,15 @@ def view(ID, Pos):
 	comms=db.execute(
 		'SELECT U.username, C.comments FROM comments C JOIN users U ON U.id=C.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchall()
+	#time tracking
+	time=datetime.datetime.now()
+	db.execute(
+		'INSERT INTO analytics(P_id, U_id, pos, timeIn, viewed, timeOut) VALUES (?,?,?,?,?,?)',
+		(ID,g.user['id'], Pos, time , 1, 0))
+	db.commit()
+	analyticID= db.execute(
+			'SELECT A_id as aid from analytics where P_id=? and U_id=? and timeOut=? ORDER BY aid DESC',(ID, g.user['id'], 0)
+	).fetchone()
 
 	if request.method=='POST':
 		comment=request.form['body']
@@ -122,9 +132,41 @@ def view(ID, Pos):
 			return redirect(url_for('plans.view', ID=ID, Pos=Pos))
 		flash(error)
 	
-	return render_template('plans/view.html', post=posts,  postID=ID, position=Pos, next=next, comms =comms,rating =rating)
+	return render_template('plans/view.html', post=posts,  postID=ID, position=Pos, next=next, comms =comms,rating =rating, AID=analyticID['aid'])
 
-########plans.create
+@bp.route('/<int:ID>/<int:Pos>/summary', methods=( 'GET', 'POST'))
+def summary(ID, Pos):
+	db=get_db()
+	rating=db.execute(
+		'SELECT SUM(rate) as score FROM (SELECT DISTINCT author_id, rate from comments WHERE prog_id= ?)', (ID,)
+	).fetchone()
+	views=db.execute(
+		'SELECT SUM(viewed) as viewCount FROM (SELECT DISTINCT U_id, viewed from analytics WHERE P_id= ? and pos= ?)', (ID,Pos,)
+	).fetchone()
+	time=db.execute(
+		'SELECT ((JulianDay(timeOut) - JulianDay(timeIn))) as timeLength FROM (SELECT timeOut, timeIn from analytics WHERE P_id= ? and pos= ?)', (ID,Pos,)
+	).fetchone()
+
+	return render_template('plans/summary.html', postID=ID, position=Pos, views =views,rating =rating, time=time)
+
+
+##the ole data collect and redirect
+@bp.route('/DCAR/<int:ID>/<int:Pos>/<int:AID>/<int:direction>', methods=( 'GET', 'POST'))
+def DCAR(ID, Pos, AID, direction):
+	#time
+	time=datetime.datetime.now()	
+
+	##db stuff
+	db=get_db()
+	db.execute(
+		'UPDATE analytics set P_id=?, U_id=?, pos=?, timeOut=? WHERE A_id=?', (ID,g.user['id'], Pos,time, AID ))
+	db.commit()
+	Pos=Pos+direction
+	return redirect(url_for('plans.view', ID=ID, Pos=Pos))
+
+
+
+########plans.getID
 ##Design: creates a post, which has mutable attributes title and body. Upon completion redirects to pages
 ##Input: None
 ##Outputs: will create or (update need to implement) a post, basically a title page and will redirect to create a page
@@ -134,3 +176,5 @@ def getID(author): # used to find the id of the post, which is then used as the 
 	PostID=get_db().execute(
 		'SELECT * FROM posts WHERE author_id = ? ORDER BY created DESC' , (author,) ).fetchone()
 	return PostID['id']
+
+

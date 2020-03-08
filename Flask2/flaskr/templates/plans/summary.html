@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %} 
+<h1> Your post has a rating of </h1>{{ rating['score'] }}
+<h1> Your post has been seen </h1>{{ views['viewCount'] }} <p> Times </p>
+<h1> Users spend an average of </h1>{{ time['timeLength'] }}<p> Minutes here </p>
+{% endblock %}

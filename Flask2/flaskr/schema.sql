@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS pages;
 DROP TABLE IF EXISTS rates;
 DROP TABLE IF EXISTS comments;
-
+DROP TABLE IF EXISTS analytics;
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS post;
 
@@ -43,4 +43,18 @@ CREATE TABLE comments(
   FOREIGN KEY (prog_id) REFERENCES posts (id),
   FOREIGN KEY (author_id) REFERENCES pages (author_id),
   FOREIGN KEY (position) REFERENCES pages (position)
+);
+
+
+CREATE TABLE analytics(
+  A_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  P_id INTEGER NOT NULL,
+  U_id INTEGER NOT NULL,
+  pos INTEGER NOT NULL,
+  timeIn TIMESTAMP NOT NULL,
+  timeOut TIMESTAMP NOT NULL,
+  viewed INTEGER,
+  FOREIGN KEY (P_id) REFERENCES posts (id),
+  FOREIGN KEY (U_id) REFERENCES pages (author_id),
+  FOREIGN KEY (pos) REFERENCES pages (position)
 );
