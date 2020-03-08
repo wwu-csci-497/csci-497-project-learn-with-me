@@ -1,0 +1,20 @@
+asn1crypto==0.24.0
+Click==7.0
+cryptography==2.1.4
+enum34==1.1.6
+Flask==1.1.1
+-e git+https://github.com/wwu-csci-497/csci-497-project-learn-with-me.git@4e7961b04fa6e94f5abfa2e09644a8dc91de27d5#egg=flaskr&subdirectory=Flask2
+gunicorn==19.10.0
+idna==2.6
+ipaddress==1.0.17
+itsdangerous==1.1.0
+Jinja2==2.11.1
+keyring==10.6.0
+keyrings.alt==3.0
+MarkupSafe==1.1.1
+pycrypto==2.6.1
+pygobject==3.26.1
+pyxdg==0.25
+SecretStorage==2.3.1
+six==1.11.0
+Werkzeug==1.0.0

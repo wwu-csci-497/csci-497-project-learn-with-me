@@ -2,6 +2,7 @@ from flask import (
 	Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from flaskr.db import get_db
+#for analytics
 import datetime
 
 bp=Blueprint('plans', __name__, url_prefix='/plans')
@@ -89,28 +90,34 @@ def page(ID,Pos):
 @bp.route('/<int:ID>/<int:Pos>/view', methods=( 'GET', 'POST'))  #used to allow users to see all of their posts, and can make an override that will share all sharable posts
 def view(ID, Pos):
 	db=get_db()
+	#getting post from DB	
 	posts=db.execute(
 		'SELECT * FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchone()
+	#getting rating from DB
 	rating=db.execute(
 		'SELECT SUM(rate) as score FROM (SELECT DISTINCT author_id, rate from comments WHERE prog_id= ?)', (ID,)
 	).fetchone()
+	
+	#used to determine if there should be a next button
 	next=True
 	nextPost=db.execute(
 		'SELECT ptitle FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, (Pos+1))
 	).fetchone()
 	if nextPost is None:
 		next=False
-	
+	#getting comments from DB
 	comms=db.execute(
 		'SELECT U.username, C.comments FROM comments C JOIN users U ON U.id=C.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchall()
-	#time tracking
+
+	#time tracking Creates analytics entry with timeIn, later updated with timeOut. Helper function to purge lost(no timeOut) analytics IDs
 	time=datetime.datetime.now()
 	db.execute(
 		'INSERT INTO analytics(P_id, U_id, pos, timeIn, viewed, timeOut) VALUES (?,?,?,?,?,?)',
 		(ID,g.user['id'], Pos, time , 1, 0))
 	db.commit()
+	#grabs analytics ID to then pass to DCAR
 	analyticID= db.execute(
 			'SELECT A_id as aid from analytics where P_id=? and U_id=? and timeOut=? ORDER BY aid DESC',(ID, g.user['id'], 0)
 	).fetchone()
@@ -131,9 +138,14 @@ def view(ID, Pos):
 			db.commit()
 			return redirect(url_for('plans.view', ID=ID, Pos=Pos))
 		flash(error)
-	
-	return render_template('plans/view.html', post=posts,  postID=ID, position=Pos, next=next, comms =comms,rating =rating, AID=analyticID['aid'])
+	#of all these, there is not a single one with a good name 
+	return render_template('plans/view.html', post = posts,  postID = ID, position = Pos, next = next, comms = comms,rating = rating, AID = analyticID['aid'])
 
+#########plans.summary
+##Design: shows stats of a certain page, rating views and length of stay
+##Input: Post ID, page#
+##Outputs: updates an existing entry in the analytics db with the timeOUT
+########
 @bp.route('/<int:ID>/<int:Pos>/summary', methods=( 'GET', 'POST'))
 def summary(ID, Pos):
 	db=get_db()
@@ -149,8 +161,22 @@ def summary(ID, Pos):
 
 	return render_template('plans/summary.html', postID=ID, position=Pos, views =views,rating =rating, time=time)
 
+#########plans.assess
+##Design: allows users to create a multiple choice assessment in lieu of a page in a post
+##Input: Post ID, page#
+##Outputs: 
+########
+@bp.route('/<int:ID>/<int:Pos>/edit', methods=( 'GET', 'POST'))
+def assess(ID, Pos):
+	return render_template('plans/assess.html', postID=ID, position=Pos)
 
-##the ole data collect and redirect
+
+
+#########plans.DCAR
+##Design: data collect and redirect, just used to monitor if a user has viewed a page and how long they were there
+##Input: Post ID, page#, the analytics ID and if the user is going to the next page or previous (updates on those buttons)
+##Outputs: updates an existing entry in the analytics db with the timeOUT
+########
 @bp.route('/DCAR/<int:ID>/<int:Pos>/<int:AID>/<int:direction>', methods=( 'GET', 'POST'))
 def DCAR(ID, Pos, AID, direction):
 	#time
@@ -159,17 +185,21 @@ def DCAR(ID, Pos, AID, direction):
 	##db stuff
 	db=get_db()
 	db.execute(
-		'UPDATE analytics set P_id=?, U_id=?, pos=?, timeOut=? WHERE A_id=?', (ID,g.user['id'], Pos,time, AID ))
+		'UPDATE analytics set timeOut=? WHERE A_id=?', (time, AID ))
 	db.commit()
+	
+	#Which way the user is going
 	Pos=Pos+direction
+	
+	#redirects to original destination after
 	return redirect(url_for('plans.view', ID=ID, Pos=Pos))
 
 
 
 ########plans.getID
-##Design: creates a post, which has mutable attributes title and body. Upon completion redirects to pages
-##Input: None
-##Outputs: will create or (update need to implement) a post, basically a title page and will redirect to create a page
+##Design: snags the most recently created ID
+##Input: Author g.user
+##Outputs: 
 ########
 def getID(author): # used to find the id of the post, which is then used as the identifier, the linker between the post head and the pages after it
 	#picks up most recent post by that author and returns the ID, should work

@@ -38,7 +38,7 @@ def create_app(test_config=None):
 	from . import plans #plans
 	app.register_blueprint(plans.bp)
 	
-	from . import profile
+	from . import profile #profiles
 	app.register_blueprint(profile.bp)
 	
 	#app views
