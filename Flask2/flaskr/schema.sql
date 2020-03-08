@@ -4,6 +4,9 @@ DROP TABLE IF EXISTS pages;
 DROP TABLE IF EXISTS rates;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS analytics;
+DROP TABLE IF EXISTS quizes;
+
+DROP TABLE IF EXISTS qchoices;
 
 CREATE TABLE users(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,9 +30,23 @@ CREATE TABLE pages(
   ptitle TEXT NOT NULL,
   pbody TEXT NOT NULL,
   goal TEXT NOT NULL,
-  quiz INTEGER NOT NULL default 0, 
+  quiz INTEGER NOT NULL, 
   FOREIGN KEY (prog_id) REFERENCES posts (id)
 );
+
+CREATE TABLE quizes(
+  qid INTEGER PRIMARY KEY AUTOINCREMENT,
+  prog_id INTEGER NOT NULL,
+  position INTEGER NOT NULL,
+  qtitle TEXT NOT NULL,
+  choice1 TEXT,
+  choice2 TEXT,
+  choice3 TEXT,
+  choice4 TEXT,
+  answer INTEGER NOT NULL,
+  FOREIGN KEY (prog_id) REFERENCES posts (id)
+);
+
 
 
 CREATE TABLE comments(

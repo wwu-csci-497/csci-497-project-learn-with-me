@@ -2,7 +2,38 @@
 
 
 {% block content %}
-  
+
+
+{% if quiz %}
+  <article class ="quiz">
+	<header>
+		<div>
+			<form method="post">
+			<h1> {{post['title']}} </h1>
+			{% if post['choice1'] %}
+			<h3>{{ post['choice1'] }}</h3>
+			<input type="radio" id="choice1" name="choice" value="1">
+    			<label for="choice1"> 1</label><br>
+			{% endif %}
+			{% if post['choice2'] %}
+			<h3>{{ post['choice2'] }}</h3>
+			<input type="radio" id="choice2" name="choice" value="2">
+    			<label for="choice2"> 2</label><br>
+			{% endif %}
+			{% if post['choice3'] %}
+			<h3>{{ post['choice3'] }}</h3>
+			<input type="radio" id="choice3" name="choice" value="3">
+    			<label for="choice3"> 3</label><br>
+			{% endif %}
+			{% if post['choice4'] %}
+			<h3>{{ post['choice4'] }}</h3>
+			<input type="radio" id="choice4" name="choice" value="4">
+    			<label for="choice4"> 4</label><br>
+			{% endif %}
+			</form>
+	</header>
+</article>
+{% else %}
     <article class="post">
       <header>
         <div>
@@ -30,6 +61,7 @@
 	{{ post['goal'] }}
 	{% endautoescape %}
 	<div>
+{% endif %}
 	{% if position != 0 %}
     	<input type="button" onclick="window.location.href='{{ url_for('plans.DCAR', ID=post['prog_id'], Pos=post['position'], AID=AID, direction=-1) }}';" value="Previous"/>
     	{% endif %}

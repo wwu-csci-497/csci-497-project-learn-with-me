@@ -48,8 +48,14 @@ def page(ID,Pos):
 	#check if there is a page that already exists, to incorporate an editor
 		#pre load as place holder?
 	post=get_db().execute(
-		'SELECT prog_id, position, ptitle, pbody, goal FROM pages WHERE prog_id = ? AND position = ?', (ID, Pos,)
+		'SELECT prog_id, position, ptitle, pbody, goal,quiz FROM pages WHERE prog_id = ? AND position = ?', (ID, Pos,)
 	).fetchone()
+	quiz=False
+	if post['quiz']== 1:
+		post=db.execute(
+		'SELECT * FROM quizes join posts ON quizes.prog_id=posts.id join users ON users.id=posts.author_id WHERE prog_id=? AND position = ?', (ID, Pos)
+		).fetchone()
+		quiz=True
 
 	#allow user to edit, and then commit the changes to the database (SQL part)
 	if request.method=='POST':
@@ -66,8 +72,8 @@ def page(ID,Pos):
 		if error is None:  #if the post already exists, and the user is editing then should update not create another entry
 			if post is None:
 				db.execute(
-				'INSERT INTO pages(prog_id, position, ptitle, pbody, goal) VALUES (?,?,?,?,?)',
-				(ID,Pos,title, body, goal))
+				'INSERT INTO pages(prog_id, position, ptitle, pbody, goal, quiz) VALUES (?,?,?,?,?,?)',
+				(ID,Pos,title, body, goal, 0))
 				db.commit()
 				return redirect(url_for('plans.page', ID=ID, Pos=Pos))
 
@@ -79,7 +85,11 @@ def page(ID,Pos):
 				return redirect(url_for('plans.page', ID=ID, Pos=Pos))
 
 		flash(error)
-	return render_template('plans/page.html', post=post, ID=ID, position=Pos)
+	
+	if quiz==True:
+		return render_template('plans/assess.html', post=post, ID=ID, position=Pos)
+	else:
+		return render_template('plans/page.html', post=post, ID=ID, position=Pos)
 
 
 ########plans.view
@@ -90,10 +100,19 @@ def page(ID,Pos):
 @bp.route('/<int:ID>/<int:Pos>/view', methods=( 'GET', 'POST'))  #used to allow users to see all of their posts, and can make an override that will share all sharable posts
 def view(ID, Pos):
 	db=get_db()
+
 	#getting post from DB	
 	posts=db.execute(
 		'SELECT * FROM pages JOIN posts ON pages.prog_id=posts.id JOIN users ON users.id=posts.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
 	).fetchone()
+	
+	quiz=False
+	if posts['quiz']== 1:
+		posts=db.execute(
+		'SELECT * FROM quizes join posts ON quizes.prog_id=posts.id join users ON users.id=posts.author_id WHERE prog_id=? AND position = ?', (ID, Pos)
+		).fetchone()
+		quiz=True
+
 	#getting rating from DB
 	rating=db.execute(
 		'SELECT SUM(rate) as score FROM (SELECT DISTINCT author_id, rate from comments WHERE prog_id= ?)', (ID,)
@@ -106,6 +125,7 @@ def view(ID, Pos):
 	).fetchone()
 	if nextPost is None:
 		next=False
+
 	#getting comments from DB
 	comms=db.execute(
 		'SELECT U.username, C.comments FROM comments C JOIN users U ON U.id=C.author_id WHERE prog_id = ? AND position = ?', (ID, Pos)
@@ -117,29 +137,42 @@ def view(ID, Pos):
 		'INSERT INTO analytics(P_id, U_id, pos, timeIn, viewed, timeOut) VALUES (?,?,?,?,?,?)',
 		(ID,g.user['id'], Pos, time , 1, 0))
 	db.commit()
+
 	#grabs analytics ID to then pass to DCAR
 	analyticID= db.execute(
 			'SELECT A_id as aid from analytics where P_id=? and U_id=? and timeOut=? ORDER BY aid DESC',(ID, g.user['id'], 0)
 	).fetchone()
 
 	if request.method=='POST':
-		comment=request.form['body']
 		try:
-			rate=request.form['rate']
-		except: 
-			rate=0
-		error=None
-		if not comment:
-			error="Comments Must have a body"
-		elif error is None:
-			db.execute(
-			'INSERT INTO comments(prog_id, author_id, position, comments, rate) VALUES(?,?,?,?,?)',
-			(ID, g.user['id'], Pos, comment, rate ))
-			db.commit()
-			return redirect(url_for('plans.view', ID=ID, Pos=Pos))
-		flash(error)
+			choice=request.form['choice']
+		except:
+			choice=None		
+		if not choice:
+			#record users answers
+			if choice==posts['answer']:
+				flash("correct!")
+			else:
+				flash("Incorrect!")
+				flash(choice)				
+		else:
+			comment=request.form['body']
+			try:
+				rate=request.form['rate']
+			except: 
+				rate=0
+			error=None
+			if not comment:
+				error="Comments Must have a body"
+			elif error is None:
+				db.execute(
+				'INSERT INTO comments(prog_id, author_id, position, comments, rate) VALUES(?,?,?,?,?)',
+				(ID, g.user['id'], Pos, comment, rate ))
+				db.commit()
+				return redirect(url_for('plans.view', ID=ID, Pos=Pos))
+			flash(error)
 	#of all these, there is not a single one with a good name 
-	return render_template('plans/view.html', post = posts,  postID = ID, position = Pos, next = next, comms = comms,rating = rating, AID = analyticID['aid'])
+	return render_template('plans/view.html', post = posts,  postID = ID, position = Pos, next = next, comms = comms,rating = rating, AID = analyticID['aid'], quiz=quiz)
 
 #########plans.summary
 ##Design: shows stats of a certain page, rating views and length of stay
@@ -166,9 +199,38 @@ def summary(ID, Pos):
 ##Input: Post ID, page#
 ##Outputs: 
 ########
-@bp.route('/<int:ID>/<int:Pos>/edit', methods=( 'GET', 'POST'))
+@bp.route('/<int:ID>/<int:Pos>/assess', methods=( 'GET', 'POST'))
 def assess(ID, Pos):
-	return render_template('plans/assess.html', postID=ID, position=Pos)
+	
+	if request.method=='POST':
+		title=request.form['title']
+		choice1,choice2,choice3,choice4=request.form['choice1'],request.form['choice2'],request.form['choice3'],request.form['choice4']
+		correct=request.form['correctChoice']
+		error=None
+		if not title:
+			error="The Quiz Must have a title"
+		elif (not choice1 or not choice2 or not choice3 or not choice4):
+			error="You must have at least 1 question"
+		elif not correct:
+			error="The quiz must have an answer"
+		if error is None:  #if the post already exists, and the user is editing then should update not create another entry
+			if True:
+				db=get_db()
+				##inserting into quiz table				
+				db.execute(
+				'INSERT INTO quizes(prog_id, position, qtitle, choice1, choice2, choice3, choice4, answer) VALUES (?,?,?,?,?,?,?,?)',
+				(ID,Pos,title, choice1,choice2,choice3,choice4, correct))
+				db.commit()
+
+				##inserting into 
+				db.execute(
+				'INSERT INTO pages(prog_id, position, ptitle, pbody, goal, quiz) VALUES (?,?,?,?,?,?)',
+				(ID,Pos,0,0,0, 1))
+				db.commit()
+				return redirect(url_for('plans.assess', ID=ID, Pos=Pos))
+
+		flash(error)
+	return render_template('plans/assess.html', ID=ID, position=Pos)
 
 
 

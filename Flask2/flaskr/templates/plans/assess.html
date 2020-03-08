@@ -1,23 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <form method="post">
-    {% if post != None %}
-    <label for="title">Title</label>
-    <textarea name="title" id="title" >{{ post['ptitle'] }}</textarea>
-    <label for="body">Body</label>
-    <textarea name="body" id="body" >{{ post['pbody'] }}</textarea>
-    <label for="Goals">Goals</label>
-    <textarea name="Goals" id="Goals">{{ post['goal'] }}</textarea>
-    {% else %}
-    <label for="title">Title</label>
-    <input name="title" id="title" value="{{ request.form['title'] }}" required>
-    <label for="body">Body</label>
-    <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
-    <label for="Goals">Goals</label>
-    <textarea name="Goals" id="Goals">{{ request.form['Goals'] }}</textarea>
 
-    {% endif %}
+{% if post != None %}
+    <form method="post">
+    <label for="title">Title</label>
+    <textarea name="title" id="title" >{{ post['qtitle'] }}</textarea>
+    
+
+    
+    <h1> Choice 1 </h1>
+    <textarea name="c1" id="c1" >{{ post['choice1'] }}</textarea>
+    <input type="radio" id="correctChoice" name="correctChoice" value="1">
+    <label for="correctChoice"> 1</label><br>
+
+    <h1> Choice 2 </h1>
+    <textarea name="c1" id="c1" >{{ post['choice2'] }}</textarea>
+    <input type="radio" id="correctChoice" name="correctChoice" value="2">
+    <label for="correctChoice"> 2</label><br>
+ 
+    <h1> Choice 3 </h1>
+    <textarea name="c1" id="c1" >{{ post['choice3'] }}</textarea>
+    <input type="radio" id="correctChoice" name="correctChoice" value="3">
+    <label for="correctChoice"> 3</label><br>
+
+   <h1> Choice 4 </h1>
+    <textarea name="c1" id="c1" >{{ post['choice4'] }}</textarea>
+    <input type="radio" id="correctChoice" name="correctChoice" value="4">
+    <label for="correctChoice"> 4</label><br>
+
     {% if position > 0 %}
     <input type="button" onclick="window.location.href='{{ url_for('plans.page', ID=ID, Pos=(position-1)) }}';" value="Previous"/>
     {% endif %}
@@ -25,4 +36,39 @@
     <input type="button" onclick="window.location.href='{{ url_for('plans.page', ID=ID, Pos=(position+1)) }}';" value="Next"/>
     <input type="submit" value="Save">
   </form>
+{% else %}
+  <form method="post">
+    <label for="title">Title</label>
+    <input name="title" id="title" value="{{ request.form['title'] }}" required>
+    
+
+    
+    <h1> Choice 1 </h1>
+    <input name="choice1" id=choice1" value="{{ request.form['choice1'] }}" > 
+    <input type="radio" id="correctChoice" name="correctChoice" value="1">
+    <label for="correctChoice"> 1</label><br>
+
+    <h1> Choice 2 </h1>
+    <input name="choice2" id=choice2" value="{{ request.form['choice2'] }}" > 
+    <input type="radio" id="correctChoice" name="correctChoice" value="2">
+    <label for="correctChoice"> 2</label><br>
+ 
+    <h1> Choice 3 </h1>
+    <input name="choice3" id=choice3" value="{{ request.form['choice3'] }}" > 
+    <input type="radio" id="correctChoice" name="correctChoice" value="3">
+    <label for="correctChoice"> 3</label><br>
+
+    <h1> Choice 4 </h1>
+    <input name="choice4" id=choice4" value="{{ request.form['choice4'] }}" > 
+    <input type="radio" id="correctChoice" name="correctChoice" value="4">
+    <label for="correctChoice"> 4</label><br>
+
+    {% if position > 0 %}
+    <input type="button" onclick="window.location.href='{{ url_for('plans.page', ID=ID, Pos=(position-1)) }}';" value="Previous"/>
+    {% endif %}
+
+    <input type="button" onclick="window.location.href='{{ url_for('plans.page', ID=ID, Pos=(position+1)) }}';" value="Next"/>
+    <input type="submit" value="Save">
+  </form>
+{% endif %}
 {% endblock %}
