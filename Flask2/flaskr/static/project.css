@@ -1,21 +1,21 @@
 html{
   font-family: sans-serif;
-	background: #97BCE8;
+	background: #678293;
   padding: 1rem;
 }
 footer {
   text-align: center;
 }
-div h1 {
+/* div h1 {
   align: left;
-  padding-right: 30rem;
+  padding-right: 20vw;
   padding-left: 1rem;
-}
-nav ul {
+} */
+div nav ul {
   display: flex;
 	list-style: none;
 	margin: 0;
-	padding-left: 25rem;
+	padding-left: 50vw;
   padding-top: 2rem;
   padding-bottom: 1rem;
 }
@@ -25,10 +25,11 @@ nav ul li {
 }
 body {
   margin: 0 auto;
-  background-color: #E8EEF1;
+  background-color: #FFF5F2;
 }
 a:link {
   text-decoration: none;
+  color: #21457F;
 }
 a:visited {
   color:#2D5280;
@@ -36,14 +37,32 @@ a:visited {
 }
 a:hover {
   color:
+  text-decoration: underline;
 }
 a:active {
   color: white;
+}
+div header h1 {
+  display: flex;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  align-items: center;
+  text-align: justify;
+  margin: auto;
 }
 
 #top {
   display: flex;
   background-color: #cccccc;
+}
+#postsbutton {
+  align-items: flex-end;
+}
+
+.welcome {
+  display: block;
+  align-items: stretch;
+  padding-left: 20%;
 }
 
 .content {
@@ -55,7 +74,7 @@ a:active {
 	border-top: 1px solid lightgray
 	border-bottom: 1px solid lightgray;
 	display: flex;
-	align-items: flex-end;
+	/* align-items: flex-end; */
 }
 .content > header h1 {
 	flex: auto;

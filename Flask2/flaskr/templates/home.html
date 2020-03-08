@@ -4,30 +4,28 @@
 
 {% block header %}
 <div>
-<article class="welcome">
-	<header>
-	<h1> "Welcome to learn with me!" </h1>
-	<p class="welcome">
-	Learn with me is a website devoted to learners and other cool things that people want to know
-	</p>
-	</header>
+	<article class="welcome">
+		<header>
+			<h1 id="title">Welcome to Learn With Me!</h1>
+			<p class="welcome" id="description">
+				Learn with me is a website devoted to learners and other cool things that people want to know.
+			</p>
+		</header>
   </article>
 </div>
+{% endblock %}
+
+{% block content %}
 
 <div>
-	<article class="content_header">
+	<article class="content_header" >
   	<h1>{% block title %}Posts{% endblock %}</h1>
   	{% if g.user %}
-			<input type="button" onclick="window.location.href='{{ url_for('plans.create') }}';" value="New"/>
+			<input id="postsbutton" type="button" onclick="window.location.href='{{ url_for('plans.create') }}';" value="New"/>
 
   	{% endif %}
 	</article>
 </div>
-{% endblock %}
-
-
-
-{% block content %}
 
   {% for post in posts %}
     <article class="content">
