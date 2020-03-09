@@ -6,17 +6,16 @@ html{
 footer {
   text-align: center;
 }
-/* div h1 {
+div a h1 {
   align: left;
-  padding-right: 20vw;
   padding-left: 1rem;
-} */
+  margin-right: 25vw;
+}
 div nav ul {
+  margin-left: 43vw;
   display: flex;
 	list-style: none;
-	margin: 0;
-	padding-left: 50vw;
-  padding-top: 2rem;
+  padding-top: 1rem;
   padding-bottom: 1rem;
 }
 nav ul li {
@@ -36,7 +35,7 @@ a:visited {
   text-decoration: none;
 }
 a:hover {
-  color:
+  color: black;
   text-decoration: underline;
 }
 a:active {
@@ -48,7 +47,13 @@ div header h1 {
   padding-bottom: 5vh;
   align-items: center;
   text-align: justify;
-  margin: auto;
+  padding-left: 40vw;
+  padding-right: 40vw;
+}
+div header p {
+  display: flex;
+  padding-left: 30vw;
+  padding right: 30vw;
 }
 
 #top {
@@ -57,12 +62,29 @@ div header h1 {
 }
 #postsbutton {
   align-items: flex-end;
+  margin-left: 96%;
+}
+#posttitle {
+  border-bottom-color: black;
+  border-bottom: 1px;
+}
+#post {
+  margin: auto;
+  padding-top: 2rem;
+}
+#view {
+  margin-left: 2000%;
+  margin-bottom: 1rem;
+}
+#edit {
+  margin-left: 2000%;
 }
 
 .welcome {
-  display: block;
+  display: flex;
   align-items: stretch;
-  padding-left: 20%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .content {
@@ -74,7 +96,7 @@ div header h1 {
 	border-top: 1px solid lightgray
 	border-bottom: 1px solid lightgray;
 	display: flex;
-	/* align-items: flex-end; */
+	align-items: flex-end;
 }
 .content > header h1 {
 	flex: auto;

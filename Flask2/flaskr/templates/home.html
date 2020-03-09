@@ -17,15 +17,21 @@
 
 {% block content %}
 
-<div>
+<div id="posttitle">
 	<article class="content_header" >
-  	<h1>{% block title %}Posts{% endblock %}</h1>
+		<div>
+  	<h1 id="post">{% block title %}Posts{% endblock %}</h1>
+		</div>
   	{% if g.user %}
+		<div>
 			<input id="postsbutton" type="button" onclick="window.location.href='{{ url_for('plans.create') }}';" value="New"/>
+		</div>
 
   	{% endif %}
 	</article>
 </div>
+
+<hr>
 
   {% for post in posts %}
     <article class="content">
@@ -35,8 +41,10 @@
           <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
         </div>
         {% if g.user['id'] == post['author_id'] %}
-          <a class="action" href="{{ url_for('plans.view', ID=post['id'], Pos=0) }}">View</a>
-	  <a class="action" href="{{ url_for('plans.page', ID=post['id'], Pos=0) }}">Edit</a>
+				<div>
+          <a id="view" class="action" href="{{ url_for('plans.view', ID=post['id'], Pos=0) }}">View</a>
+	  			<a id="edit" class="action" href="{{ url_for('plans.page', ID=post['id'], Pos=0) }}">Edit</a>
+				</div>
         {% endif %}
       </header>
       <p class="body">{{ post['body'] }}</p>
