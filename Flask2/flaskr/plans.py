@@ -43,20 +43,19 @@ def page(ID,Pos):
 	#initialize variables
 	if ID is None:
 		return redirect(url_for('plans.create'))
-	post=None
+	
 	db=get_db()
 	#check if there is a page that already exists, to incorporate an editor
 		#pre load as place holder?
 	post=get_db().execute(
 		'SELECT prog_id, position, ptitle, pbody, goal,quiz FROM pages WHERE prog_id = ? AND position = ?', (ID, Pos,)
 	).fetchone()
-	quiz=False
-	if post['quiz']== 1:
-		post=db.execute(
-		'SELECT * FROM quizes join posts ON quizes.prog_id=posts.id join users ON users.id=posts.author_id WHERE prog_id=? AND position = ?', (ID, Pos)
-		).fetchone()
-		quiz=True
-
+	quiz=""
+	try:	
+		if post['quiz']== 1:
+			quiz=True
+	except: 
+		quiz=False
 	#allow user to edit, and then commit the changes to the database (SQL part)
 	if request.method=='POST':
 		title=request.form['title']
@@ -154,7 +153,8 @@ def view(ID, Pos):
 				flash("correct!")
 			else:
 				flash("Incorrect!")
-				flash(choice)				
+				flash(choice)
+				flash(posts['answer'])				
 		else:
 			comment=request.form['body']
 			try:
@@ -194,6 +194,8 @@ def summary(ID, Pos):
 
 	return render_template('plans/summary.html', postID=ID, position=Pos, views =views,rating =rating, time=time)
 
+
+
 #########plans.assess
 ##Design: allows users to create a multiple choice assessment in lieu of a page in a post
 ##Input: Post ID, page#
@@ -202,10 +204,18 @@ def summary(ID, Pos):
 @bp.route('/<int:ID>/<int:Pos>/assess', methods=( 'GET', 'POST'))
 def assess(ID, Pos):
 	
+	db=get_db()
+	post=db.execute(
+			'SELECT * FROM quizes join posts ON quizes.prog_id=posts.id join users ON users.id=posts.author_id WHERE prog_id=? AND position = ?', (ID, Pos)
+		).fetchone()
+
 	if request.method=='POST':
 		title=request.form['title']
 		choice1,choice2,choice3,choice4=request.form['choice1'],request.form['choice2'],request.form['choice3'],request.form['choice4']
-		correct=request.form['correctChoice']
+		try:		
+			correct=request.form['correctChoice']
+		except:
+			correct=0		
 		error=None
 		if not title:
 			error="The Quiz Must have a title"
@@ -215,7 +225,7 @@ def assess(ID, Pos):
 			error="The quiz must have an answer"
 		if error is None:  #if the post already exists, and the user is editing then should update not create another entry
 			if True:
-				db=get_db()
+				
 				##inserting into quiz table				
 				db.execute(
 				'INSERT INTO quizes(prog_id, position, qtitle, choice1, choice2, choice3, choice4, answer) VALUES (?,?,?,?,?,?,?,?)',
@@ -230,7 +240,7 @@ def assess(ID, Pos):
 				return redirect(url_for('plans.assess', ID=ID, Pos=Pos))
 
 		flash(error)
-	return render_template('plans/assess.html', ID=ID, position=Pos)
+	return render_template('plans/assess.html',post=post, ID=ID, position=Pos)
 
 
 
@@ -251,20 +261,85 @@ def DCAR(ID, Pos, AID, direction):
 	db.commit()
 	
 	#Which way the user is going
-	Pos=Pos+direction
+	if direction==2:
+		Pos=Pos-1
+	else:
+		Pos=Pos+1
 	
 	#redirects to original destination after
 	return redirect(url_for('plans.view', ID=ID, Pos=Pos))
 
 
 
+#########plans.delete
+##Design: depending on what variables are passed the function either deletes a certain page or an entire post
+##Input: Post ID, page#
+##Outputs: 
+########
+@bp.route('/delete/<int:ID>/<string:Pos>/')
+def delete(ID, Pos):
+	db=get_db()	
+	if Pos=='None':
+		db.execute(
+			'DELETE FROM pages WHERE prog_id=?', (ID,))
+		db.commit()
+		db.execute(
+			'DELETE FROM posts WHERE id=?',(ID,))
+		db.commit()
+	else:
+		pos=int(Pos)		
+		db.execute(
+			'DELETE FROM pages WHERE prog_id=? AND position=?',(ID, pos,))
+		db.commit()
+		#what if it has a quiz?
+		
+		recursiveCleanUp(ID, pos+1)
+	return redirect(url_for('home.home'))
+
+#########plans.switch
+##Design: changes a page that was a quiz and turns it back into a page, will eventually integrate to do both ways
+##Input: Post ID, page#
+##Outputs: 
+########
+@bp.route('/switch/<int:ID>/<int:Pos>/')
+def switch(ID, Pos):
+	db=get_db()
+	db.execute(
+		'UPDATE pages SET quiz=? WHERE prog_id=? AND position=?',(0,ID, Pos,))
+	db.commit()
+	post=db.execute(
+		'SELECT prog_id, position, ptitle, pbody, goal,quiz FROM pages WHERE prog_id = ? AND position = ?', (ID, Pos,))
+	db.commit()
+	return render_template('plans/page.html', post=post, ID=ID, position=Pos)
+
+#########cleanUp function
+##Design: Used to reorder pages in a post after a page has been deleted
+##Input: Post ID, page#
+##Outputs: 
+########
+def recursiveCleanUp(ID, Pos):
+	db=get_db()
+	page=db.execute(
+		'SELECT ptitle FROM pages WHERE prog_id=? AND position=?',(ID, Pos,))
+	db.commit()
+	try:
+		page=page['ptitle']
+	except:
+		page=None	
+	if page==None:
+		print("howdy")
+	else:
+		db.execute(
+			'UPDATE pages SET position=? WHERE prog_id=? AND position=?', ((Pos-1),ID, Pos,))
+		db.commit()		
+		recursiveCleanUp(ID, (Pos+1))
+
 ########plans.getID
 ##Design: snags the most recently created ID
 ##Input: Author g.user
 ##Outputs: 
 ########
-def getID(author): # used to find the id of the post, which is then used as the identifier, the linker between the post head and the pages after it
-	#picks up most recent post by that author and returns the ID, should work
+def getID(author): 
 	PostID=get_db().execute(
 		'SELECT * FROM posts WHERE author_id = ? ORDER BY created DESC' , (author,) ).fetchone()
 	return PostID['id']

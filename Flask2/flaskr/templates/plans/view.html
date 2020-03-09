@@ -9,27 +9,29 @@
 	<header>
 		<div>
 			<form method="post">
-			<h1> {{post['title']}} </h1>
-			{% if post['choice1'] %}
-			<h3>{{ post['choice1'] }}</h3>
-			<input type="radio" id="choice1" name="choice" value="1">
-    			<label for="choice1"> 1</label><br>
-			{% endif %}
-			{% if post['choice2'] %}
-			<h3>{{ post['choice2'] }}</h3>
-			<input type="radio" id="choice2" name="choice" value="2">
-    			<label for="choice2"> 2</label><br>
-			{% endif %}
-			{% if post['choice3'] %}
-			<h3>{{ post['choice3'] }}</h3>
-			<input type="radio" id="choice3" name="choice" value="3">
-    			<label for="choice3"> 3</label><br>
-			{% endif %}
-			{% if post['choice4'] %}
-			<h3>{{ post['choice4'] }}</h3>
-			<input type="radio" id="choice4" name="choice" value="4">
-    			<label for="choice4"> 4</label><br>
-			{% endif %}
+				{% autoescape off %}			
+				<h1> {{post['title']}} </h1>
+				{% if post['choice1'] %}
+				<h3>{{ post['choice1'] }}</h3>
+				<input type="radio" id="choice1" name="choice" value="1">
+    				<label for="choice1"> 1</label><br>
+				{% endif %}
+				{% if post['choice2'] %}
+				<h3>{{ post['choice2'] }}</h3>
+				<input type="radio" id="choice2" name="choice" value="2">
+    				<label for="choice2"> 2</label><br>
+				{% endif %}
+				{% if post['choice3'] %}
+				<h3>{{ post['choice3'] }}</h3>
+				<input type="radio" id="choice3" name="choice" value="3">
+    				<label for="choice3"> 3</label><br>
+				{% endif %}
+				{% if post['choice4'] %}
+				<h3>{{ post['choice4'] }}</h3>
+				<input type="radio" id="choice4" name="choice" value="4">
+    				<label for="choice4"> 4</label><br>
+				{% endif %}
+				{% endautoescape %}
 			</form>
 	</header>
 </article>
@@ -51,6 +53,7 @@
 		{% if g.user['id'] == post['author_id'] %}
                 <a class="action" href="{{ url_for('plans.page', ID=post['prog_id'], Pos=post['position']) }}">Edit</a>
 		<a class="action" href="{{ url_for('plans.summary', ID=post['prog_id'], Pos=post['position']) }}">Summary</a>
+		<a class="action" href="{{ url_for('plans.delete', ID=post['prog_id'], Pos=post['position']) }}">Delete</a>
         	{% endif %}
 	{% endif %} 
       </header>
@@ -63,7 +66,7 @@
 	<div>
 {% endif %}
 	{% if position != 0 %}
-    	<input type="button" onclick="window.location.href='{{ url_for('plans.DCAR', ID=post['prog_id'], Pos=post['position'], AID=AID, direction=-1) }}';" value="Previous"/>
+    	<input type="button" onclick="window.location.href='{{ url_for('plans.DCAR', ID=post['prog_id'], Pos=post['position'], AID=AID, direction=2) }}';" value="Previous"/>
     	{% endif %}
 	{% if next == True %}
    	 <input type="button" onclick="window.location.href='{{ url_for('plans.DCAR', ID=post['prog_id'], Pos=post['position'], AID=AID, direction=+1) }}';" value="Next"/>

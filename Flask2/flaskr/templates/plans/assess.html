@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
+{% block header %}
+<input type="button" onclick="window.location.href='{{ url_for('plans.switch', ID=ID, Pos=position) }}';" value="page"/>
+{% endblock %}
+
 
 {% block content %}
-
+	
 {% if post != None %}
     <form method="post">
     <label for="title">Title</label>
@@ -15,17 +19,17 @@
     <label for="correctChoice"> 1</label><br>
 
     <h1> Choice 2 </h1>
-    <textarea name="c1" id="c1" >{{ post['choice2'] }}</textarea>
+    <textarea name="c2" id="c2" >{{ post['choice2'] }}</textarea>
     <input type="radio" id="correctChoice" name="correctChoice" value="2">
     <label for="correctChoice"> 2</label><br>
  
     <h1> Choice 3 </h1>
-    <textarea name="c1" id="c1" >{{ post['choice3'] }}</textarea>
+    <textarea name="c3" id="c3" >{{ post['choice3'] }}</textarea>
     <input type="radio" id="correctChoice" name="correctChoice" value="3">
     <label for="correctChoice"> 3</label><br>
 
    <h1> Choice 4 </h1>
-    <textarea name="c1" id="c1" >{{ post['choice4'] }}</textarea>
+    <textarea name="c4" id="c4" >{{ post['choice4'] }}</textarea>
     <input type="radio" id="correctChoice" name="correctChoice" value="4">
     <label for="correctChoice"> 4</label><br>
 
