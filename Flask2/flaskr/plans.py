@@ -153,8 +153,8 @@ def view(ID, Pos):
 				flash("correct!")
 			else:
 				flash("Incorrect!")
-				flash(choice)
-				flash(posts['answer'])				
+				flash("The correct answer is option "+ str(posts['answer']))
+				#with next phase answers will be recorded				
 		else:
 			comment=request.form['body']
 			try:
@@ -189,7 +189,7 @@ def summary(ID, Pos):
 		'SELECT SUM(viewed) as viewCount FROM (SELECT DISTINCT U_id, viewed from analytics WHERE P_id= ? and pos= ?)', (ID,Pos,)
 	).fetchone()
 	time=db.execute(
-		'SELECT ((JulianDay(timeOut) - JulianDay(timeIn))) as timeLength FROM (SELECT timeOut, timeIn from analytics WHERE P_id= ? and pos= ?)', (ID,Pos,)
+		'SELECT ((JulianDay(timeOut) - JulianDay(timeIn))*24*60) as timeLength FROM (SELECT timeOut, timeIn from analytics WHERE P_id= ? and pos= ?)', (ID,Pos,)
 	).fetchone()
 
 	return render_template('plans/summary.html', postID=ID, position=Pos, views =views,rating =rating, time=time)
@@ -219,8 +219,6 @@ def assess(ID, Pos):
 		error=None
 		if not title:
 			error="The Quiz Must have a title"
-		elif (not choice1 or not choice2 or not choice3 or not choice4):
-			error="You must have at least 1 question"
 		elif not correct:
 			error="The quiz must have an answer"
 		if error is None:  #if the post already exists, and the user is editing then should update not create another entry
