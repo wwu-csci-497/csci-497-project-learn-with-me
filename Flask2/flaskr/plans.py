@@ -321,12 +321,8 @@ def recursiveCleanUp(ID, Pos):
 	db=get_db()
 	page=db.execute(
 		'SELECT ptitle FROM pages WHERE prog_id=? AND position=?',(ID, Pos,))
-	db.commit()
-	try:
-		page=page['ptitle']
-	except:
-		page=None	
-	if page==None:
+	db.commit()	
+	if page is None:
 		print("howdy")
 	else:
 		db.execute(
