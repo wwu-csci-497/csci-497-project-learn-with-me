@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS pages;
 DROP TABLE IF EXISTS rates;
-DROP TABLE IF EXISTS comments;
+
 DROP TABLE IF EXISTS analytics;
 DROP TABLE IF EXISTS quizes;
 
@@ -49,17 +49,7 @@ CREATE TABLE quizes(
 
 
 
-CREATE TABLE comments(
-  comID INTEGER PRIMARY KEY AUTOINCREMENT,
-  prog_id INTEGER NOT NULL,
-  author_id INTEGER NOT NULL,
-  position INTEGER NOT NULL,
-  comments TEXT,
-  rate INTEGER,
-  FOREIGN KEY (prog_id) REFERENCES posts (id),
-  FOREIGN KEY (author_id) REFERENCES pages (author_id),
-  FOREIGN KEY (position) REFERENCES pages (position)
-);
+
 
 
 CREATE TABLE analytics(
@@ -74,3 +64,4 @@ CREATE TABLE analytics(
   FOREIGN KEY (U_id) REFERENCES pages (author_id),
   FOREIGN KEY (pos) REFERENCES pages (position)
 );
+

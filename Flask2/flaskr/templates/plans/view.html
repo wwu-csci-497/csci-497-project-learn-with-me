@@ -89,13 +89,14 @@
 
 {% for comm in comms %}
     <article class="content">
-      <header>
-        <div>
-          <div class="about">by {{ comm['username'] }}</div>
-      </header>
+      
 	{% autoescape off %}
       <p class="body">{{ comm['comments'] }}</p>
 	{% endautoescape %}	
+	<header>
+        <div>
+          <div class="about">by {{ comm['username'] }}</div>
+      </header>
     </article>
     {% if not loop.last %}
  	{% endif %}

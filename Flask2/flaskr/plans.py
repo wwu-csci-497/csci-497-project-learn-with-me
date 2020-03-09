@@ -145,15 +145,17 @@ def view(ID, Pos):
 	if request.method=='POST':
 		try:
 			choice=request.form['choice']
+			answer=posts['answer']
 		except:
-			choice=None		
-		if not choice:
+			choice=None
+			answer=None		
+		if choice is not None:
 			#record users answers
-			if choice==posts['answer']:
+			if choice==answer:
 				flash("correct!")
 			else:
 				flash("Incorrect!")
-				flash("The correct answer is option "+ str(posts['answer']))
+				flash("The correct answer is option "+ str(answer))
 				#with next phase answers will be recorded				
 		else:
 			comment=request.form['body']
