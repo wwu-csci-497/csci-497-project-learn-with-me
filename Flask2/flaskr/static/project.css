@@ -12,7 +12,7 @@ div a h1 {
   margin-right: 25vw;
 }
 div nav ul {
-  margin-left: 43vw;
+  margin-left: 47vw;
   display: flex;
 	list-style: none;
   padding-top: 1rem;
@@ -73,11 +73,11 @@ div header p {
   padding-top: 2rem;
 }
 #view {
-  margin-left: 2000%;
+  margin-left: 2350%;
   margin-bottom: 1rem;
 }
 #edit {
-  margin-left: 2000%;
+  margin-left: 2350%;
 }
 
 .welcome {
